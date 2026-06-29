@@ -11,6 +11,8 @@ export default function TabExam() {
   
   const [examState, setExamState] = useState<'idle' | 'running' | 'completed'>('idle');
   const [examMode, setExamMode] = useState<'static' | 'ai'>('static');
+  const [isStrictMode, setIsStrictMode] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(45 * 60);
   const [currentQ, setCurrentQ] = useState(0);
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +27,23 @@ export default function TabExam() {
 
   // Track results for personalized feedback
   const [results, setResults] = useState<{q: typeof examQuestions[0], userAns: any, isCorrect: boolean}[]>([]);
+
+  React.useEffect(() => {
+    if (examState === 'running' && isStrictMode && timeLeft > 0) {
+      const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
+      return () => clearInterval(timer);
+    } else if (examState === 'running' && isStrictMode && timeLeft === 0) {
+      // Auto submit
+      setExamState('completed');
+      if (examMode === 'ai') generateFeedback(results);
+    }
+  }, [examState, isStrictMode, timeLeft, examMode, results]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
 
   const generateQuestion = async (index: number) => {
     if (!aiClient) return null;
@@ -77,6 +96,7 @@ export default function TabExam() {
     setShortAnswerInput('');
     setResults([]);
     setDynamicFeedback(null);
+    setTimeLeft(45 * 60);
     
     if (mode === 'ai') {
       await generateQuestion(0);
@@ -86,30 +106,50 @@ export default function TabExam() {
   };
 
   const submitShortAnswer = () => {
-    if (!shortAnswerInput.trim()) return;
+    if (!shortAnswerInput.trim() || isEvaluated) return;
     const q = dynamicQ!;
     const isCorrect = shortAnswerInput.trim().toLowerCase() === q.correctAnswerText?.toLowerCase();
     
     setSelectedAns(shortAnswerInput);
-    setIsEvaluated(true);
+    if (!isStrictMode) {
+      setIsEvaluated(true);
+    }
     
     if (isCorrect) setScore(s => s + 1);
     setResults(prev => [...prev, { q, userAns: shortAnswerInput, isCorrect }]);
   };
 
   const handleAnswerMCQ = (index: number) => {
-    if (isEvaluated) return;
+    if (isEvaluated && !isStrictMode) return; // Prevent changing if evaluated, but in strict mode we just let them click next? Wait, if they click an answer we should just select it.
+    // If strict mode, they can change answer before clicking Next. So let's handle that.
     const q = dynamicQ!;
     const isCorrect = index === q.correctAnswer;
     
     setSelectedAns(index);
-    setIsEvaluated(true);
-    
-    if (isCorrect) setScore(s => s + 1);
-    setResults(prev => [...prev, { q, userAns: index, isCorrect }]);
+    if (!isStrictMode) {
+      setIsEvaluated(true);
+      if (isCorrect) setScore(s => s + 1);
+      setResults(prev => [...prev, { q, userAns: index, isCorrect }]);
+    } else {
+      // In strict mode, we'll wait for "Next Question" to save the result.
+      // We can just store selectedAns for now.
+    }
   };
 
   const nextQuestion = async () => {
+    if (isStrictMode && selectedAns !== null) {
+      // Record answer on next
+      const q = dynamicQ!;
+      let isCorrect = false;
+      if (q.type === 'mcq') {
+        isCorrect = selectedAns === q.correctAnswer;
+      } else {
+        isCorrect = (selectedAns as string).trim().toLowerCase() === q.correctAnswerText?.toLowerCase();
+      }
+      if (isCorrect) setScore(s => s + 1);
+      setResults(prev => [...prev, { q, userAns: selectedAns, isCorrect }]);
+    }
+
     const totalQ = examMode === 'static' ? examQuestions.length : 5; // AI exam has 5 questions
     if (currentQ < totalQ - 1) {
       const nextIdx = currentQ + 1;
@@ -208,19 +248,29 @@ export default function TabExam() {
 
         {examState === 'running' && !isLoading && q && (
           <div className="flex flex-col gap-6 animate-in fade-in">
-            <div className="flex justify-between items-center text-sm font-bold text-slate-400 border-b border-white/5 pb-4">
-              <span>Question {currentQ + 1} of {totalQ}</span>
-              <div className="flex items-center gap-3">
-                <span className="text-[#0078d4] uppercase tracking-wider">{q.topic}</span>
-                <span className={`px-2 py-0.5 rounded border text-[10px] uppercase tracking-wider ${getDifficultyColor(q.difficulty)}`}>
-                  {q.difficulty}
-                </span>
-                {examMode === 'ai' && (
-                  <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20 text-[10px] uppercase tracking-wider flex items-center gap-1">
-                    <Bot className="w-3 h-3" /> AI Generated
-                  </span>
-                )}
+            <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/10">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-[#0078d4]/10 rounded-lg">
+                  <Bot className="w-6 h-6 text-[#0078d4]" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Question {currentQ + 1} of {totalQ}</h2>
+                  <div className="flex gap-3 text-sm text-slate-400 mt-1">
+                    <span className="flex items-center gap-1"><BookOpen className="w-4 h-4" /> {q.topic}</span>
+                    <span className="flex items-center gap-1">
+                      <AlertTriangle className={`w-4 h-4 ${q.difficulty === 'hard' ? 'text-rose-400' : 'text-amber-400'}`} /> 
+                      {q.difficulty}
+                    </span>
+                  </div>
+                </div>
               </div>
+              {isStrictMode && (
+                <div className="flex items-center gap-2 bg-[#050505] border border-rose-500/30 px-4 py-2 rounded-xl">
+                  <span className={`font-mono font-bold text-lg ${timeLeft < 300 ? 'text-rose-500 animate-pulse' : 'text-slate-300'}`}>
+                    {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                  </span>
+                </div>
+              )}
             </div>
 
             {q.scenario && (
@@ -239,19 +289,27 @@ export default function TabExam() {
               </div>
             )}
 
-            {/* MCQ Type */}
             {q.type === 'mcq' && q.options && (
               <div className="flex flex-col gap-3 mt-2">
                 {q.options.map((opt, idx) => {
-                  const isCorrect = idx === q.correctAnswer;
-                  const isSelected = selectedAns === idx;
-                  let btnClass = "text-left p-4 rounded-xl border transition-all ";
-                  if (!isEvaluated) btnClass += "bg-[#000000] border-white/5 hover:border-[#0078d4]/50 hover:bg-[#0f172a]";
-                  else if (isCorrect) btnClass += "bg-[#0078d4]/20 border-[#0078d4]/50 text-blue-100";
-                  else if (isSelected && !isCorrect) btnClass += "bg-rose-500/20 border-rose-500/50 text-rose-100";
-                  else btnClass += "bg-[#000000] border-white/5 opacity-50";
+                  let btnClass = "w-full text-left p-4 rounded-xl border transition-all text-slate-300 flex items-center justify-between group ";
+                  if (!isEvaluated || isStrictMode) {
+                    if (selectedAns === idx) {
+                      btnClass += "border-[#0078d4] bg-[#0078d4]/10 text-white shadow-[0_0_10px_rgba(0,120,212,0.2)]";
+                    } else {
+                      btnClass += "border-slate-700 bg-[#050505] hover:bg-[#0a0a0a] hover:border-slate-500";
+                    }
+                  } else {
+                    if (idx === q.correctAnswer) {
+                      btnClass += "border-emerald-500 bg-emerald-500/20 text-emerald-100";
+                    } else if (selectedAns === idx) {
+                      btnClass += "border-rose-500 bg-rose-500/20 text-rose-100";
+                    } else {
+                      btnClass += "border-slate-800 bg-[#000000] opacity-50";
+                    }
+                  }
                   return (
-                    <button key={idx} onClick={() => handleAnswerMCQ(idx)} className={btnClass} disabled={isEvaluated}>
+                    <button key={idx} onClick={() => handleAnswerMCQ(idx)} className={btnClass} disabled={isEvaluated && !isStrictMode}>
                       {opt}
                     </button>
                   );
@@ -259,49 +317,45 @@ export default function TabExam() {
               </div>
             )}
 
-            {/* Short Answer Type */}
             {q.type === 'short-answer' && (
               <div className="flex flex-col gap-4 mt-2">
-                <div className="flex gap-2">
-                  <input 
-                    type="text" 
-                    value={shortAnswerInput}
-                    onChange={(e) => setShortAnswerInput(e.target.value)}
-                    disabled={isEvaluated}
-                    placeholder="Type your exact command, concept, or function name here..."
-                    className="flex-1 bg-[#02040a] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-[#0078d4] transition-colors disabled:opacity-50"
-                  />
-                  {!isEvaluated && (
-                    <button 
-                      onClick={submitShortAnswer}
-                      disabled={!shortAnswerInput.trim()}
-                      className="bg-[#0078d4] hover:bg-blue-500 text-white font-bold px-6 rounded-xl transition-colors disabled:opacity-50"
-                    >
-                      Submit
-                    </button>
-                  )}
-                </div>
-                {isEvaluated && (
-                  <div className={`p-4 rounded-xl border flex items-start gap-3 ${selectedAns === q.correctAnswerText ? 'bg-[#0078d4]/10 border-[#0078d4]/30' : 'bg-rose-500/10 border-rose-500/30'}`}>
-                    {selectedAns === q.correctAnswerText ? <CheckCircle className="w-5 h-5 text-[#0078d4]" /> : <XCircle className="w-5 h-5 text-rose-400" />}
-                    <div>
-                      <p className="font-bold text-sm mb-1">{selectedAns === q.correctAnswerText ? 'Correct!' : 'Incorrect'}</p>
-                      <p className="text-slate-300 text-sm">The required answer is: <strong className="text-white bg-white/10 px-2 py-0.5 rounded font-mono">{q.correctAnswerText}</strong></p>
-                    </div>
-                  </div>
+                <input 
+                  type="text" 
+                  value={shortAnswerInput}
+                  onChange={(e) => setShortAnswerInput(e.target.value)}
+                  disabled={isEvaluated && !isStrictMode}
+                  placeholder="Type your exact command, concept, or function name here..."
+                  className="flex-1 bg-[#02040a] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-[#0078d4] transition-colors disabled:opacity-50"
+                />
+                {!isEvaluated && (
+                  <button 
+                    onClick={submitShortAnswer}
+                    disabled={!shortAnswerInput.trim()}
+                    className="bg-[#0078d4] hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    Submit Answer
+                  </button>
                 )}
               </div>
             )}
 
-            {isEvaluated && (
-              <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl animate-in slide-in-from-bottom-2 fade-in">
-                <div className="flex items-center gap-2 text-blue-400 font-bold mb-2"><AlertTriangle className="w-4 h-4" /> Official Docs Explanation</div>
-                <p className="text-sm text-slate-300">{q.explanation}</p>
-                <div className="flex justify-end mt-4">
-                  <button onClick={nextQuestion} className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 transition-colors shadow-lg">
-                    Next <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
+            {(isEvaluated || (isStrictMode && selectedAns !== null)) && (
+              <div className="mt-8 pt-8 border-t border-white/10 animate-in slide-in-from-bottom-4">
+                {!isStrictMode && (
+                  <div className={`p-6 rounded-xl border mb-6 ${selectedAns === (q.type === 'mcq' ? q.correctAnswer : q.correctAnswerText) ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'}`}>
+                    <h3 className={`text-lg font-bold mb-2 flex items-center gap-2 ${selectedAns === (q.type === 'mcq' ? q.correctAnswer : q.correctAnswerText) ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {selectedAns === (q.type === 'mcq' ? q.correctAnswer : q.correctAnswerText) ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
+                      {selectedAns === (q.type === 'mcq' ? q.correctAnswer : q.correctAnswerText) ? 'Correct!' : 'Incorrect'}
+                    </h3>
+                    <p className="text-slate-300 leading-relaxed">{q.explanation}</p>
+                  </div>
+                )}
+                <button 
+                  onClick={nextQuestion}
+                  className="w-full bg-[#050505] border border-white/10 hover:bg-[#0a0a0a] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+                >
+                  {currentQ < totalQ - 1 ? 'Next Question' : 'Finish Exam'} <ArrowRight className="w-5 h-5" />
+                </button>
               </div>
             )}
           </div>
@@ -326,38 +380,36 @@ export default function TabExam() {
             {examMode === 'ai' && !isLoading && dynamicFeedback && (
               <div className="bg-[#0078d4]/10 rounded-2xl border border-[#0078d4]/30 p-6">
                 <h4 className="font-bold text-lg mb-4 text-[#0078d4] flex items-center gap-2">
-                  <Bot className="w-5 h-5" /> AI Tutor Feedback
+                  <Bot className="w-5 h-5" /> AI Tutor Assessment
                 </h4>
-                <div className="prose prose-invert prose-blue max-w-none text-slate-300 whitespace-pre-wrap">
-                  {dynamicFeedback}
+                <div className="prose prose-invert prose-blue max-w-none text-sm text-slate-300">
+                  <pre className="whitespace-pre-wrap font-sans bg-transparent border-0 p-0 text-slate-300">{dynamicFeedback}</pre>
                 </div>
               </div>
             )}
-            
-            <div className="bg-[#02040a] rounded-2xl border border-white/5 p-6">
-              <h4 className="font-bold text-lg mb-4 text-white">Detailed Review</h4>
-              <div className="flex flex-col gap-4">
+
+            {/* Results breakdown in Strict Mode */}
+            {isStrictMode && (
+              <div className="mt-6 flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                <h4 className="font-bold text-lg text-white mb-2">Exam Results Breakdown</h4>
                 {results.map((res, i) => (
-                  <div key={i} className={`p-4 rounded-xl border ${res.isCorrect ? 'bg-[#0078d4]/5 border-[#0078d4]/20' : 'bg-rose-500/5 border-rose-500/20'}`}>
-                    <div className="flex items-start gap-3">
-                      {res.isCorrect ? <CheckCircle className="w-5 h-5 text-[#0078d4] shrink-0 mt-0.5" /> : <XCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />}
-                      <div className="flex-1">
-                        <p className="font-bold text-sm mb-1">{res.q.question}</p>
-                        {!res.isCorrect && (
-                          <div className="text-xs text-slate-400 mt-2 p-2 bg-black/40 rounded border border-white/5 font-mono">
-                            <span className="text-rose-400">Your Answer:</span> {res.q.type === 'mcq' ? res.q.options?.[res.userAns as number] : res.userAns}
-                            <br/>
-                            <span className="text-[#0078d4]">Correct Answer:</span> {res.q.type === 'mcq' ? res.q.options?.[res.q.correctAnswer as number] : res.q.correctAnswerText}
-                          </div>
-                        )}
-                        <p className="text-xs text-slate-400 mt-2">{res.q.explanation}</p>
-                      </div>
+                  <div key={i} className={`p-4 rounded-xl border ${res.isCorrect ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20'}`}>
+                    <div className="flex-1">
+                      <p className="font-bold text-sm mb-1">{res.q.question}</p>
+                      {!res.isCorrect && (
+                        <div className="text-xs text-slate-400 mt-2 p-2 bg-black/40 rounded border border-white/5 font-mono">
+                          <span className="text-rose-400">Your Answer:</span> {res.q.type === 'mcq' ? res.q.options?.[res.userAns as number] : res.userAns}
+                          <br/>
+                          <span className="text-[#0078d4]">Correct Answer:</span> {res.q.type === 'mcq' ? res.q.options?.[res.q.correctAnswer as number] : res.q.correctAnswerText}
+                        </div>
+                      )}
+                      <p className="text-xs text-slate-400 mt-2">{res.q.explanation}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-
+            )}
+            
             <div className="flex justify-center mt-4">
               <button onClick={() => setExamState('idle')} className="bg-[#0f172a] border border-white/10 hover:bg-white/10 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-xl">
                 Return to Exam Dashboard

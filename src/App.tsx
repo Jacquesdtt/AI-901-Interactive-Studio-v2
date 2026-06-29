@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   GraduationCap, ExternalLink, Calendar, CheckSquare, Sparkles, Network, Server, Target, Layers, 
-  Bot, Box, ShieldAlert, Brain, FileText
+  Bot, Box, ShieldAlert, Brain, FileText, Code, BookOpen
 } from 'lucide-react';
 
 import UnifiedDashboard from './components/domains/UnifiedDashboard';
@@ -18,6 +18,10 @@ import TabSecret from './components/TabSecret';
 import TabCheatSheet from './components/TabCheatSheet';
 import AiChatbot from './components/AiChatbot';
 import OnboardingQuiz from './components/OnboardingQuiz';
+import TabSandbox from './components/TabSandbox';
+import TabFlashcards from './components/TabFlashcards';
+import TabArchitecture from './components/TabArchitecture';
+import TabDocs from './components/TabDocs';
 import { ActiveTab } from './types';
 import { useMastery } from './context/MasteryContext';
 
@@ -111,6 +115,42 @@ export default function App() {
           <button onClick={() => setActiveTab('study-plan')} className={navBtnClass(activeTab === 'study-plan')}>
             <Calendar className="w-3.5 h-3.5 shrink-0" /><span>Study Plan</span>
           </button>
+          <button 
+              onClick={() => setActiveTab('sandbox')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'sandbox' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Code className="w-3.5 h-3.5" /> Sandbox
+          </button>
+          
+          <button 
+              onClick={() => setActiveTab('flashcards')}
+              className={`px-3 py-1.5 ml-1 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'flashcards' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Brain className="w-3.5 h-3.5" /> SRS Flashcards
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('architecture')}
+              className={`px-3 py-1.5 ml-1 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'architecture' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Network className="w-3.5 h-3.5" /> Architecture
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('docs')}
+              className={`px-3 py-1.5 ml-1 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'docs' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" /> Docs Explorer
+          </button>
+
           <button onClick={() => setActiveTab('exam')} className={navBtnClass(activeTab === 'exam', false, true)}>
             <CheckSquare className="w-3.5 h-3.5 shrink-0" /><span>Mock Exam</span>
           </button>
@@ -126,6 +166,10 @@ export default function App() {
 
       {/* DYNAMIC MAIN CONTENT AREA */}
       <main className="flex-1 overflow-hidden relative">
+        {activeTab === 'flashcards' && <TabFlashcards />}
+        {activeTab === 'sandbox' && <TabSandbox />}
+        {activeTab === 'architecture' && <TabArchitecture />}
+        {activeTab === 'docs' && <TabDocs />}
         {activeTab === 'onboarding' && <OnboardingQuiz onComplete={() => setActiveTab('dashboard')} />}
         {activeTab === 'dashboard' && <UnifiedDashboard setActiveTab={setActiveTab} />}
         {activeTab === 'domain1' && <Domain1 />}

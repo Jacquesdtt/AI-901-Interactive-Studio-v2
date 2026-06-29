@@ -1,4 +1,12 @@
-export type ActiveTab = 'dashboard' | 'domain1' | 'domain2' | 'domain3' | 'domain4' | 'domain5' | 'domain6' | 'domain7' | 'study-plan' | 'exam' | 'secret' | 'cheat-sheet' | 'onboarding';
+export type ActiveTab = 'dashboard' | 'domain1' | 'domain2' | 'domain3' | 'domain4' | 'domain5' | 'domain6' | 'domain7' | 'study-plan' | 'exam' | 'secret' | 'cheat-sheet' | 'onboarding' | 'sandbox' | 'flashcards' | 'architecture' | 'docs';
+
+export interface FlashcardState {
+  id: string;
+  nextReviewDate: number; // timestamp
+  interval: number; // days
+  easeFactor: number;
+  repetitions: number;
+}
 
 export interface DomainScores {
   foundations: number;
@@ -14,6 +22,7 @@ export interface UserMasteryState {
   streaks: number;
   domainScores: DomainScores;
   unlockedSecrets: boolean;
+  flashcards?: Record<string, FlashcardState>;
 }
 
 export interface CurriculumNode {
