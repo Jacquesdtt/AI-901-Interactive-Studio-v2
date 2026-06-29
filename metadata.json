@@ -1,0 +1,6 @@
+{
+  "name": "AI-901 Visualised",
+  "description": "An interactive educational study guide and live Azure AI Foundry Agent execution client visualizer for the MS AI-901 certification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
