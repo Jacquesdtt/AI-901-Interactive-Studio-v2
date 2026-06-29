@@ -59,14 +59,49 @@ export default function GenAiTab() {
           })}
         </div>
 
-        {/* Action Button */}
-        <div className="flex justify-center mt-8">
-          <button 
-            onClick={() => setStep(s => s >= 3 ? 0 : s + 1)}
-            className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-          >
-            {step >= 3 ? 'Reset Pipeline' : 'Step Forward'}
-          </button>
+        {/* Step Details & Scrubber */}
+        <div className="flex flex-col items-center mt-8 gap-6 w-full">
+          
+          {/* Step Description Card */}
+          <div className="bg-[#181820] border border-purple-500/30 p-5 rounded-xl w-full max-w-2xl text-center shadow-lg relative overflow-hidden transition-all duration-300">
+            <div className="absolute top-0 left-0 w-full h-1 bg-purple-500/10">
+              <div 
+                className="h-full bg-purple-500 transition-all duration-500 ease-out" 
+                style={{ width: `${((step + 1) / workflow.length) * 100}%` }} 
+              />
+            </div>
+            <h5 className="text-purple-400 font-bold mb-2">Step {step + 1}: {workflow[step].title}</h5>
+            <p className="text-slate-300 text-sm leading-relaxed">{workflow[step].desc}</p>
+          </div>
+
+          {/* Scrubber Control */}
+          <div className="flex items-center gap-4 w-full max-w-md">
+            <input 
+              type="range" 
+              min={0} 
+              max={workflow.length - 1} 
+              value={step} 
+              onChange={(e) => setStep(parseInt(e.target.value))}
+              className="flex-grow accent-purple-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer hover:accent-purple-400 transition-all"
+            />
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-4 mt-2">
+            <button 
+              onClick={() => setStep(s => Math.max(0, s - 1))}
+              disabled={step === 0}
+              className="bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold py-2 px-6 rounded-lg transition-colors border border-white/5"
+            >
+              Previous
+            </button>
+            <button 
+              onClick={() => setStep(s => s >= 3 ? 0 : s + 1)}
+              className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.6)]"
+            >
+              {step >= 3 ? 'Reset Pipeline' : 'Next Step'}
+            </button>
+          </div>
         </div>
 
       </div>

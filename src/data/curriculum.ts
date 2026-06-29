@@ -1,7 +1,11 @@
-export const examQuestions = [
+import { ExamQuestion } from '../types';
+
+export const examQuestions: ExamQuestion[] = [
   {
     id: 1,
     topic: 'Containerisation',
+    difficulty: 'easy',
+    type: 'mcq',
     question: 'What is the primary difference between a Docker Image and a Docker Container?',
     options: [
       'An image is a running instance, while a container is a read-only template.',
@@ -14,8 +18,21 @@ export const examQuestions = [
   },
   {
     id: 2,
+    topic: 'Foundry SDK',
+    difficulty: 'medium',
+    type: 'short-answer',
+    question: 'What is the exact function name required to authenticate and initialize the Foundry tooling layer before invoking other agents or models?',
+    scenario: 'You are writing a Python script using the Microsoft Foundry SDK to list available models. Before calling `foundry_models_list()`, you must ensure the session is authenticated.',
+    correctAnswerText: 'foundry_check_auth',
+    explanation: 'The Foundry tooling layer requires `foundry_check_auth` to be called first to ensure the workspace and telemetry environment are properly authorized before any other SDK operations.'
+  },
+  {
+    id: 3,
     topic: 'Deep Learning',
-    question: 'In PyTorch, what happens when you call `loss.backward()`?',
+    difficulty: 'hard',
+    type: 'mcq',
+    question: 'Given the code snippet, what is the purpose of `loss.backward()`?',
+    codeSnippet: 'optimizer.zero_grad()\noutputs = model(inputs)\nloss = criterion(outputs, labels)\nloss.backward()\noptimizer.step()',
     options: [
       'It updates the weights of the neural network using the optimizer.',
       'It clears the gradients of all optimized `torch.Tensor`s.',
@@ -26,17 +43,31 @@ export const examQuestions = [
     explanation: 'According to PyTorch official docs, `Tensor.backward()` computes the gradient of current tensor w.r.t. graph leaves. The optimizer step (`optimizer.step()`) is what actually updates the weights.'
   },
   {
-    id: 3,
-    topic: 'MLOps',
-    question: 'What is the primary purpose of MLflow Tracking?',
+    id: 4,
+    topic: 'Foundry SDK',
+    difficulty: 'hard',
+    type: 'mcq',
+    question: 'Based on the Foundry SDK usage below, what will happen if `agent_id` does not exist?',
+    codeSnippet: 'try:\n    response = foundry_agent_invoke(agent_id="data-processor-v2", payload={"data": "raw"})\nexcept FoundryError as e:\n    print(e)',
+    scenario: 'You are orchestrating a multi-agent workflow. The `data-processor-v2` agent was recently deleted by another pipeline.',
     options: [
-      'To host machine learning models as REST APIs.',
-      'To version control training data sets.',
-      'To log parameters, code versions, metrics, and output files when running machine learning code.',
-      'To automatically hyperparameter tune any Scikit-Learn model.'
+      'The function will silently create a new agent with that ID.',
+      'It raises a FoundryError which is caught and printed.',
+      'The code enters an infinite retry loop.',
+      'It returns a null response instead of throwing an error.'
     ],
-    correctAnswer: 2,
-    explanation: 'Official MLflow documentation states MLflow Tracking is an API and UI for logging parameters, code versions, metrics, and output files when running your machine learning code.'
+    correctAnswer: 1,
+    explanation: 'Invoking a non-existent agent via `foundry_agent_invoke` raises a specific SDK error (`FoundryError` or similar standard exception), which in this snippet is caught by the try-except block.'
+  },
+  {
+    id: 5,
+    topic: 'MLOps',
+    difficulty: 'medium',
+    type: 'short-answer',
+    question: 'Which MLflow command line instruction starts the tracking server bound to all network interfaces on port 5000?',
+    scenario: 'You are deploying an MLflow tracking server inside a Docker container. You need it to be accessible from outside the container.',
+    correctAnswerText: 'mlflow server --host 0.0.0.0 --port 5000',
+    explanation: 'To expose the MLflow server outside of localhost (especially in Docker), you must bind to all interfaces using `--host 0.0.0.0`.'
   }
 ];
 

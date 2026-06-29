@@ -1,4 +1,4 @@
-export type ActiveTab = 'welcome' | 'guide' | 'sdk' | 'visualizer' | 'guardrails' | 'content-understanding' | 'responsible-ai' | 'study-plan' | 'practice-quiz' | 'mastery-welcome' | 'foundations' | 'machine-learning' | 'pytorch' | 'network' | 'containerisation' | 'mlops' | 'gen-ai' | 'integration' | 'exam' | 'secret';
+export type ActiveTab = 'dashboard' | 'domain1' | 'domain2' | 'domain3' | 'domain4' | 'domain5' | 'domain6' | 'domain7' | 'study-plan' | 'exam' | 'secret' | 'cheat-sheet' | 'onboarding';
 
 export interface DomainScores {
   foundations: number;
@@ -37,4 +37,21 @@ export interface ExecutionStep {
   action: string;
   payload: any;
   status: 'pending' | 'running' | 'success' | 'error';
+}
+
+export type QuestionDifficulty = 'easy' | 'medium' | 'hard';
+export type QuestionType = 'mcq' | 'short-answer';
+
+export interface ExamQuestion {
+  id: number;
+  topic: string;
+  difficulty: QuestionDifficulty;
+  type: QuestionType;
+  question: string;
+  scenario?: string;
+  codeSnippet?: string;
+  options?: string[]; // for mcq
+  correctAnswer?: number; // for mcq index
+  correctAnswerText?: string; // for short-answer exact/partial match
+  explanation: string;
 }
