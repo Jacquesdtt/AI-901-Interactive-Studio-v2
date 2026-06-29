@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   BookOpen, Code2, Cpu, GraduationCap, ExternalLink, HelpCircle, ShieldCheck, 
-  Shield, Calendar, CheckSquare, Sparkles, Network, Server, Target, Layers
+  Shield, Calendar, CheckSquare, Sparkles, Network, Server, Target, Layers, 
+  Bot, Box, GitMerge
 } from 'lucide-react';
 import GuideTab from './components/GuideTab';
 import FoundrySdkTab from './components/FoundrySdkTab';
@@ -14,11 +15,16 @@ import ContentUnderstandingTab from './components/ContentUnderstandingTab';
 import WelcomeTab from './components/WelcomeTab';
 import { ActiveTab } from './types';
 
-// New Pedagogical Modules
+// Pedagogical Modules
 import MasteryWelcome from './components/MasteryWelcome';
-import NetworkArchitecture from './components/visualizers/NetworkArchitecture';
-import MLOpsSimulator from './components/visualizers/MLOpsSimulator';
+import FoundationsTab from './components/visualizers/FoundationsTab';
+import MachineLearningTab from './components/visualizers/MachineLearningTab';
 import PyTorchInspector from './components/visualizers/PyTorchInspector';
+import NetworkArchitecture from './components/visualizers/NetworkArchitecture';
+import ContainerisationTab from './components/visualizers/ContainerisationTab';
+import MLOpsSimulator from './components/visualizers/MLOpsSimulator';
+import GenAiTab from './components/visualizers/GenAiTab';
+import LifecycleIntegrationTab from './components/visualizers/LifecycleIntegrationTab';
 import TabExam from './components/TabExam';
 import TabSecret from './components/TabSecret';
 import { useMastery } from './context/MasteryContext';
@@ -70,59 +76,74 @@ export default function App() {
           </div>
         </div>
 
-        {/* Core Nav Tabs - Expanded for all 15 modules */}
+        {/* Core Nav Tabs - Expanded for all 20 modules */}
         <nav className="flex items-center bg-[#13131a] border border-white/5 rounded-lg p-1 overflow-x-auto w-full shrink-0 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           
           <span className="px-3 text-[10px] font-bold tracking-widest text-slate-500 uppercase border-r border-white/10 mr-1 shrink-0">Legacy</span>
           
           <button onClick={() => setActiveTab('welcome')} className={navBtnClass(activeTab === 'welcome')}>
-            <Sparkles className="w-3.5 h-3.5 shrink-0" /><span>0. Welcome</span>
+            <Sparkles className="w-3.5 h-3.5 shrink-0" /><span>Welcome</span>
           </button>
           <button onClick={() => setActiveTab('guide')} className={navBtnClass(activeTab === 'guide')}>
-            <BookOpen className="w-3.5 h-3.5 shrink-0" /><span>1. Guide</span>
+            <BookOpen className="w-3.5 h-3.5 shrink-0" /><span>Guide</span>
           </button>
           <button onClick={() => setActiveTab('sdk')} className={navBtnClass(activeTab === 'sdk')}>
-            <Code2 className="w-3.5 h-3.5 shrink-0" /><span>2. Foundry SDK</span>
+            <Code2 className="w-3.5 h-3.5 shrink-0" /><span>SDK</span>
           </button>
           <button onClick={() => setActiveTab('visualizer')} className={navBtnClass(activeTab === 'visualizer')}>
-            <Cpu className="w-3.5 h-3.5 shrink-0" /><span>3. Agent Visualizer</span>
+            <Cpu className="w-3.5 h-3.5 shrink-0" /><span>Agent Visualizer</span>
           </button>
           <button onClick={() => setActiveTab('guardrails')} className={navBtnClass(activeTab === 'guardrails')}>
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0" /><span>4. Guardrails</span>
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0" /><span>Guardrails</span>
           </button>
           <button onClick={() => setActiveTab('content-understanding')} className={navBtnClass(activeTab === 'content-understanding')}>
-            <Layers className="w-3.5 h-3.5 shrink-0" /><span>5. Content Understanding</span>
+            <Layers className="w-3.5 h-3.5 shrink-0" /><span>Content Auth</span>
           </button>
           <button onClick={() => setActiveTab('responsible-ai')} className={navBtnClass(activeTab === 'responsible-ai')}>
-            <Shield className="w-3.5 h-3.5 shrink-0" /><span>6. Responsible AI</span>
+            <Shield className="w-3.5 h-3.5 shrink-0" /><span>Resp. AI</span>
           </button>
           <button onClick={() => setActiveTab('study-plan')} className={navBtnClass(activeTab === 'study-plan')}>
-            <Calendar className="w-3.5 h-3.5 shrink-0" /><span>7. Study Plan</span>
+            <Calendar className="w-3.5 h-3.5 shrink-0" /><span>Plan</span>
           </button>
           <button onClick={() => setActiveTab('practice-quiz')} className={navBtnClass(activeTab === 'practice-quiz', true)}>
-            <CheckSquare className="w-3.5 h-3.5 shrink-0" /><span>8. Practice Quiz</span>
+            <CheckSquare className="w-3.5 h-3.5 shrink-0" /><span>Quiz</span>
           </button>
 
           <span className="px-3 ml-2 text-[10px] font-bold tracking-widest text-teal-500 uppercase border-x border-white/10 mx-1 shrink-0">New Pedagogy</span>
 
           <button onClick={() => setActiveTab('mastery-welcome')} className={navBtnClass(activeTab === 'mastery-welcome')}>
-            <Target className="w-3.5 h-3.5 shrink-0" /><span>A. Mastery</span>
+            <Target className="w-3.5 h-3.5 shrink-0" /><span>Mastery</span>
           </button>
-          <button onClick={() => setActiveTab('network')} className={navBtnClass(activeTab === 'network')}>
-            <Network className="w-3.5 h-3.5 shrink-0" /><span>B. Sockets</span>
+          <button onClick={() => setActiveTab('foundations')} className={navBtnClass(activeTab === 'foundations')}>
+            <Target className="w-3.5 h-3.5 shrink-0" /><span>Foundations</span>
           </button>
-          <button onClick={() => setActiveTab('mlops')} className={navBtnClass(activeTab === 'mlops')}>
-            <Server className="w-3.5 h-3.5 shrink-0" /><span>C. MLOps</span>
+          <button onClick={() => setActiveTab('machine-learning')} className={navBtnClass(activeTab === 'machine-learning')}>
+            <Cpu className="w-3.5 h-3.5 shrink-0" /><span>ML</span>
           </button>
           <button onClick={() => setActiveTab('pytorch')} className={navBtnClass(activeTab === 'pytorch')}>
-            <Cpu className="w-3.5 h-3.5 shrink-0" /><span>D. PyTorch</span>
+            <Network className="w-3.5 h-3.5 shrink-0" /><span>DL/PyTorch</span>
+          </button>
+          <button onClick={() => setActiveTab('network')} className={navBtnClass(activeTab === 'network')}>
+            <Server className="w-3.5 h-3.5 shrink-0" /><span>DevOps</span>
+          </button>
+          <button onClick={() => setActiveTab('containerisation')} className={navBtnClass(activeTab === 'containerisation')}>
+            <Box className="w-3.5 h-3.5 shrink-0" /><span>Containers</span>
+          </button>
+          <button onClick={() => setActiveTab('mlops')} className={navBtnClass(activeTab === 'mlops')}>
+            <ShieldAlert className="w-3.5 h-3.5 shrink-0" /><span>MLOps</span>
+          </button>
+          <button onClick={() => setActiveTab('gen-ai')} className={navBtnClass(activeTab === 'gen-ai')}>
+            <Bot className="w-3.5 h-3.5 shrink-0" /><span>GenAI</span>
+          </button>
+          <button onClick={() => setActiveTab('integration')} className={navBtnClass(activeTab === 'integration', false, true)}>
+            <GitMerge className="w-3.5 h-3.5 shrink-0" /><span>Integration</span>
           </button>
           <button onClick={() => setActiveTab('exam')} className={navBtnClass(activeTab === 'exam')}>
-            <GraduationCap className="w-3.5 h-3.5 shrink-0" /><span>E. Exam</span>
+            <GraduationCap className="w-3.5 h-3.5 shrink-0" /><span>Exam</span>
           </button>
           {mastery.unlockedSecrets && (
             <button onClick={() => setActiveTab('secret')} className={navBtnClass(activeTab === 'secret', false, true)}>
-              <ShieldAlert className="w-3.5 h-3.5 shrink-0" /><span>F. Secret</span>
+              <ShieldAlert className="w-3.5 h-3.5 shrink-0" /><span>Secret</span>
             </button>
           )}
 
@@ -143,10 +164,15 @@ export default function App() {
         {activeTab === 'practice-quiz' && <PracticeQuizTab />}
         
         {/* New Pedagogical Modules */}
-        {activeTab === 'mastery-welcome' && <MasteryWelcome />}
-        {activeTab === 'network' && <NetworkArchitecture />}
-        {activeTab === 'mlops' && <MLOpsSimulator />}
+        {activeTab === 'mastery-welcome' && <MasteryWelcome setActiveTab={setActiveTab} />}
+        {activeTab === 'foundations' && <FoundationsTab />}
+        {activeTab === 'machine-learning' && <MachineLearningTab />}
         {activeTab === 'pytorch' && <PyTorchInspector />}
+        {activeTab === 'network' && <NetworkArchitecture />}
+        {activeTab === 'containerisation' && <ContainerisationTab />}
+        {activeTab === 'mlops' && <MLOpsSimulator />}
+        {activeTab === 'gen-ai' && <GenAiTab />}
+        {activeTab === 'integration' && <LifecycleIntegrationTab />}
         {activeTab === 'exam' && <TabExam />}
         {activeTab === 'secret' && <TabSecret />}
       </main>
