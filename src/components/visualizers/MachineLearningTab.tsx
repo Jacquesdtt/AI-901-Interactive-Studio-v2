@@ -1,9 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Cpu, Database, Settings2, LineChart, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 export default function MachineLearningTab() {
   const [activeStep, setActiveStep] = useState(0);
   const [selectedTree, setSelectedTree] = useState<number | null>(null);
+
+  const [mean1, setMean1] = useState(10);
+  const [std1, setStd1] = useState(30);
+  const [mean2, setMean2] = useState(200);
+  const [std2, setStd2] = useState(20);
+
+  const distAData = useMemo(() => {
+    const points = [];
+    const minVal = -100;
+    const maxVal = 300;
+    const step = (maxVal - minVal) / 40;
+    for (let i = 0; i <= 40; i++) {
+      const x = minVal + i * step;
+      const exponent = Math.exp(-Math.pow(x - mean1, 2) / (2 * Math.pow(std1, 2)));
+      const y = (1 / (std1 * Math.sqrt(2 * Math.PI))) * exponent;
+      points.push({ x: Math.round(x), y });
+    }
+    return points;
+  }, [mean1, std1]);
+
+  const distBData = useMemo(() => {
+    const points = [];
+    const minVal = -100;
+    const maxVal = 300;
+    const step = (maxVal - minVal) / 40;
+    for (let i = 0; i <= 40; i++) {
+      const x = minVal + i * step;
+      const exponent = Math.exp(-Math.pow(x - mean2, 2) / (2 * Math.pow(std2, 2)));
+      const y = (1 / (std2 * Math.sqrt(2 * Math.PI))) * exponent;
+      points.push({ x: Math.round(x), y });
+    }
+    return points;
+  }, [mean2, std2]);
+
+  const standardisedData = useMemo(() => {
+    const points = [];
+    const minVal = -4;
+    const maxVal = 4;
+    const step = (maxVal - minVal) / 40;
+    for (let i = 0; i <= 40; i++) {
+      const x = minVal + i * step;
+      const exponent = Math.exp(-Math.pow(x - 0, 2) / 2);
+      const y = (1 / Math.sqrt(2 * Math.PI)) * exponent;
+      points.push({ x: parseFloat(x.toFixed(2)), y });
+    }
+    return points;
+  }, []);
 
   const steps = [
     { id: 'data', title: 'Data Ingestion', icon: Database, desc: 'Load CSV, handle missing values, Train/Test split.' },
@@ -138,12 +186,105 @@ export default function MachineLearningTab() {
           )}
 
           {activeStep === 1 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <p className="text-xs text-slate-300 leading-relaxed">
                 <strong>Standardisation Formula:</strong><br/>
                 <span className="font-mono text-sm block my-2 text-indigo-400">z = (x - μ) / σ</span>
-                where x is the raw feature value, μ is the mean, and σ is the standard deviation. This shifts the mean to 0 and scales the variance to 1.
+                where x is the raw feature value, μ is the mean, and σ is the standard deviation. This shifts the mean of both distributions to 0 and scales their variance to 1.
               </p>
+
+              {/* Interactive Before/After Scaling Visualizer */}
+              <div className="bg-[#0e0e12] border border-white/5 rounded-xl p-6 space-y-6 shadow-inner">
+                <h5 className="text-xs font-bold text-[#0078d4] uppercase tracking-widest text-center">
+                  🔄 Feature Standardisation Visual Comparison
+                </h5>
+
+                {/* BEFORE SCALING */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Distribution A */}
+                  <div className="bg-black/30 border border-white/5 rounded-lg p-4 flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-slate-300">Feature A (e.g. Temp/Age)</span>
+                      <span className="text-[10px] font-mono text-slate-500">m = {mean1}, s = {std1}</span>
+                    </div>
+                    <div className="h-[140px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={distAData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+                          <XAxis dataKey="x" stroke="#555" fontSize={8} domain={[-100, 300]} type="number" />
+                          <Area type="monotone" dataKey="y" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex-1 flex flex-col gap-1">
+                        <label className="text-[9px] text-slate-500 uppercase">Mean (μ): {mean1}</label>
+                        <input type="range" min="-50" max="150" value={mean1} onChange={e => setMean1(Number(e.target.value))} className="accent-blue-500 w-full" />
+                      </div>
+                      <div className="flex-1 flex flex-col gap-1">
+                        <label className="text-[9px] text-slate-500 uppercase">Std Dev (σ): {std1}</label>
+                        <input type="range" min="10" max="60" value={std1} onChange={e => setStd1(Number(e.target.value))} className="accent-blue-500 w-full" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Distribution B */}
+                  <div className="bg-black/30 border border-white/5 rounded-lg p-4 flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-slate-300">Feature B (e.g. Income/Weight)</span>
+                      <span className="text-[10px] font-mono text-slate-500">m = {mean2}, s = {std2}</span>
+                    </div>
+                    <div className="h-[140px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={distBData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+                          <XAxis dataKey="x" stroke="#555" fontSize={8} domain={[-100, 300]} type="number" />
+                          <Area type="monotone" dataKey="y" stroke="#ef4444" fill="#ef4444" fillOpacity={0.15} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex-1 flex flex-col gap-1">
+                        <label className="text-[9px] text-slate-500 uppercase">Mean (μ): {mean2}</label>
+                        <input type="range" min="100" max="250" value={mean2} onChange={e => setMean2(Number(e.target.value))} className="accent-red-500 w-full" />
+                      </div>
+                      <div className="flex-1 flex flex-col gap-1">
+                        <label className="text-[9px] text-slate-500 uppercase">Std Dev (σ): {std2}</label>
+                        <input type="range" min="10" max="50" value={std2} onChange={e => setStd2(Number(e.target.value))} className="accent-red-500 w-full" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Standardisation Link Indicator */}
+                <div className="flex flex-col items-center justify-center -my-2">
+                  <div className="text-[10px] font-mono text-indigo-400 uppercase tracking-widest">Standardisation</div>
+                  <div className="text-xs text-slate-600">▼</div>
+                </div>
+
+                {/* AFTER SCALING */}
+                <div className="bg-black/40 border border-[#0078d4]/20 rounded-lg p-4 flex flex-col gap-3 max-w-xl mx-auto w-full">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-emerald-400">Comparable Distributions (Shared Scale)</span>
+                    <span className="text-[10px] font-mono text-emerald-500">m = 0.0, s = 1.0</span>
+                  </div>
+                  <div className="h-[140px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={standardisedData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+                        <XAxis dataKey="x" stroke="#555" fontSize={8} domain={[-4, 4]} type="number" />
+                        <Area type="monotone" dataKey="y" stroke="#10b981" fill="#10b981" fillOpacity={0.2} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <p className="text-[10px] text-slate-500 text-center leading-normal">
+                    Both Feature A and Feature B are transformed onto the standard normal curve (Z-distribution). 
+                    Their scales are now directly comparable, eliminating sizing bias during model fitting.
+                  </p>
+                </div>
+              </div>
+
+              {/* Raw vs Scaled value table */}
               <div className="bg-black/30 p-3 rounded-lg overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
