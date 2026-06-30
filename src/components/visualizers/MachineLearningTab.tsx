@@ -191,18 +191,72 @@ export default function MachineLearningTab() {
           )}
 
           {activeStep === 2 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <p className="text-xs text-slate-300 leading-relaxed">
                 <strong>Ensemble Decision Tree Prediction:</strong><br/>
                 A Random Forest is a collection of M decision trees. The final regression output is the average prediction across all trees:
                 <span className="font-mono text-sm block my-2 text-indigo-400">y_pred = (1 / M) * Σ T_j(x)</span>
               </p>
-              <div className="bg-black/30 p-3 rounded-lg text-xs leading-normal space-y-1">
-                <div>🌳 Tree 1 Predicts: <span className="font-bold text-sky-400">15.5</span></div>
-                <div>🌳 Tree 2 Predicts: <span className="font-bold text-sky-400">17.2</span></div>
-                <div>🌳 Tree 3 Predicts: <span className="font-bold text-sky-400">16.1</span></div>
-                <div className="pt-1.5 border-t border-white/5 font-bold text-emerald-400">
-                  Ensemble Prediction (Average): (15.5 + 17.2 + 16.1) / 3 = 16.27
+
+              <div className="bg-[#0e0e12] border border-white/5 rounded-xl p-6 flex flex-col items-center relative shadow-inner">
+                {/* Title */}
+                <h5 className="text-xs font-bold text-[#0078d4] uppercase tracking-widest mb-6">
+                  🌲 Random Forest Regression – Ensemble Prediction
+                </h5>
+
+                {/* Input Node */}
+                <div className="bg-[#181820] border border-white/10 rounded-lg px-4 py-2 text-xs font-bold text-slate-300 z-10 shadow">
+                  Input Sample (x)
+                </div>
+
+                {/* Branching Lines */}
+                <div className="w-3/4 h-6 border-b border-l border-r border-slate-700 relative -mt-0.5">
+                  <div className="absolute left-1/2 top-0 h-full border-l border-slate-700 transform -translate-x-1/2" />
+                </div>
+                
+                {/* Flow Arrowheads */}
+                <div className="w-3/4 flex justify-between px-0 -mt-1 mb-2">
+                  <span className="text-[8px] text-slate-600">▼</span>
+                  <span className="text-[8px] text-slate-600">▼</span>
+                  <span className="text-[8px] text-slate-600">▼</span>
+                </div>
+
+                {/* Trees columns */}
+                <div className="grid grid-cols-3 gap-4 w-full">
+                  <div className="bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col items-center text-center shadow-sm">
+                    <span className="text-xs font-bold text-slate-400">Decision Tree 1</span>
+                    <span className="text-[10px] text-slate-500 mt-1">Prediction</span>
+                    <span className="text-sm font-bold text-sky-400 mt-0.5">15.5</span>
+                  </div>
+                  <div className="bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col items-center text-center shadow-sm">
+                    <span className="text-xs font-bold text-slate-400">Decision Tree 2</span>
+                    <span className="text-[10px] text-slate-500 mt-1">Prediction</span>
+                    <span className="text-sm font-bold text-sky-400 mt-0.5">17.2</span>
+                  </div>
+                  <div className="bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col items-center text-center shadow-sm">
+                    <span className="text-xs font-bold text-slate-400">Decision Tree 3</span>
+                    <span className="text-[10px] text-slate-500 mt-1">Prediction</span>
+                    <span className="text-sm font-bold text-sky-400 mt-0.5">16.1</span>
+                  </div>
+                </div>
+
+                {/* Convergence Lines */}
+                <div className="w-3/4 h-6 border-t border-l border-r border-slate-700 relative mt-4">
+                  <div className="absolute left-1/2 bottom-0 h-full border-l border-slate-700 transform -translate-x-1/2" />
+                </div>
+                <div className="text-[8px] text-slate-600 -mt-1 mb-2">▼</div>
+
+                {/* Calculation */}
+                <div className="bg-[#181820] border border-white/10 rounded-lg p-3.5 flex flex-col items-center text-center shadow">
+                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">Calculate Average</span>
+                  <span className="text-xs font-bold text-slate-300 mt-1">(15.5 + 17.2 + 16.1) / 3</span>
+                </div>
+
+                <div className="text-[8px] text-slate-600 my-2">▼</div>
+
+                {/* Final Ensemble Prediction */}
+                <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl px-6 py-2.5 font-bold text-sm text-center shadow-md">
+                  Final Prediction = 16.27
                 </div>
               </div>
             </div>
