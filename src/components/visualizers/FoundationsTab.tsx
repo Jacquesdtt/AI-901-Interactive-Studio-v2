@@ -130,97 +130,109 @@ export default function FoundationsTab() {
     return data;
   }, [vizLib, snsPalette]);
 
-  // Code Generation helper
   const generatedCode = useMemo(() => {
     if (vizLib === 'matplotlib') {
       if (matplotlibPlot === 'line') {
-        return `# Matplotlib Line Plot
+        return `# Matplotlib: Model Loss Curve (Training vs Validation)
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Set the interface/style sheet
+# Set the style theme
 plt.style.use('${pltStyle}')
 
-x = np.linspace(0, 10, 100)
-y = np.sin(x)
+epochs = np.arange(1, 21)
+train_loss = 0.5 * np.exp(-epochs/5) + np.random.normal(0, 0.01, 20)
+val_loss = 0.5 * np.exp(-epochs/5) + 0.05 + np.random.normal(0, 0.01, 20)
 
 plt.figure(figsize=(8, 4))
-plt.plot(x, y, label='Sine Wave', color='blue', linestyle='-')
-plt.title('Sine Wave Demonstration')
-plt.xlabel('X Axis')
-plt.ylabel('Y Axis')
+plt.plot(epochs, train_loss, label='Training Loss', color='blue', marker='o')
+plt.plot(epochs, val_loss, label='Validation Loss', color='red', marker='x')
+plt.title('Deep Learning Training History')
+plt.xlabel('Epochs')
+plt.ylabel('Loss (MSE)')
 ${showGrid ? 'plt.grid(True)' : 'plt.grid(False)'}
 plt.legend()
+plt.tight_layout()
 plt.show()`;
       } else if (matplotlibPlot === 'scatter') {
-        return `# Matplotlib Scatter Plot
+        return `# Matplotlib: Hyperparameter Search (LR vs Accuracy)
 import matplotlib.pyplot as plt
 import numpy as np
 
 plt.style.use('${pltStyle}')
 
 np.random.seed(42)
-x = np.random.rand(50) * 10
-y = 2 * x + np.random.randn(50) * 2
+lr = np.logspace(-5, -1, 50)
+accuracy = 0.85 - (np.log10(lr) + 3)**2 * 0.05 + np.random.normal(0, 0.02, 50)
 
 plt.figure(figsize=(8, 4))
-plt.scatter(x, y, color='purple', alpha=0.7, edgecolors='black')
-plt.title('Scatter Plot Analysis')
-plt.xlabel('Independent Variable')
-plt.ylabel('Dependent Variable')
+plt.scatter(lr, accuracy, color='purple', alpha=0.8, edgecolors='black')
+plt.xscale('log')
+plt.title('Hyperparameter Tuning Surface')
+plt.xlabel('Learning Rate (Log Scale)')
+plt.ylabel('Validation Accuracy')
 ${showGrid ? 'plt.grid(True)' : 'plt.grid(False)'}
+plt.tight_layout()
 plt.show()`;
       } else if (matplotlibPlot === 'histogram') {
-        return `# Matplotlib Histogram
+        return `# Matplotlib: Token Count Distribution in LLM Prompts
 import matplotlib.pyplot as plt
 import numpy as np
 
 plt.style.use('${pltStyle}')
 
-data = np.random.randn(1000)
+# Generate simulated token lengths
+token_counts = np.random.lognormal(mean=5.5, sigma=0.4, size=1000)
 
 plt.figure(figsize=(8, 4))
-plt.hist(data, bins=30, color='emerald', edgecolor='black', alpha=0.75)
-plt.title('Data Distribution Histogram')
-plt.xlabel('Value')
+plt.hist(token_counts, bins=30, color='emerald', edgecolor='black', alpha=0.75)
+plt.title('LLM Prompt Token Count Distribution')
+plt.xlabel('Number of Tokens')
 plt.ylabel('Frequency')
 ${showGrid ? 'plt.grid(True)' : 'plt.grid(False)'}
+plt.tight_layout()
 plt.show()`;
       } else if (matplotlibPlot === 'contour') {
-        return `# Matplotlib Contour Plot
+        return `# Matplotlib: 2D Weight Loss Landscape (Optimization)
 import matplotlib.pyplot as plt
 import numpy as np
 
 plt.style.use('${pltStyle}')
 
-x = np.linspace(-3.0, 3.0, 100)
-y = np.linspace(-3.0, 3.0, 100)
-X, Y = np.meshgrid(x, y)
-Z = np.sin(X) * np.cos(Y)
+w1 = np.linspace(-2.0, 2.0, 100)
+w2 = np.linspace(-2.0, 2.0, 100)
+W1, W2 = np.meshgrid(w1, w2)
+Loss = W1**2 + 2*W2**2
 
 plt.figure(figsize=(8, 4))
-# Generate contour plot
-cp = plt.contourf(X, Y, Z, cmap='viridis')
-plt.colorbar(cp)
-plt.title('Contour Level Map')
+cp = plt.contourf(W1, W2, Loss, cmap='viridis')
+plt.colorbar(cp, label='Loss Value')
+plt.title('Loss Landscape Gradient Surface')
+plt.xlabel('Parameter Weight w1')
+plt.ylabel('Parameter Weight w2')
+plt.tight_layout()
 plt.show()`;
       } else {
-        return `# Matplotlib Subplots
+        return `# Matplotlib: Model Evaluation Dashboard (Subplots)
 import matplotlib.pyplot as plt
-import numpy as np
 
 plt.style.use('${pltStyle}')
-x = np.linspace(0, 10, 100)
 
-# Create a figure with a 1x2 grid of subplots
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
-ax1.plot(x, np.sin(x), color='red')
-ax1.set_title('Subplot 1: Sine')
+# Subplot 1: Validation AUC Curve
+ax1.plot([1, 2, 3, 4], [0.72, 0.81, 0.85, 0.89], color='green', marker='^')
+ax1.set_title('AUC Validation Curve')
+ax1.set_xlabel('Epochs')
+ax1.set_ylabel('AUC')
 ${showGrid ? 'ax1.grid(True)' : 'ax1.grid(False)'}
 
-ax2.bar(['A', 'B', 'C'], [4, 7, 2], color='blue')
-ax2.set_title('Subplot 2: Bar Chart')
+# Subplot 2: Feature Importance (SHAP values)
+features = ['Latency', 'TokenLen', 'Similarity', 'Memory']
+importances = [0.45, 0.30, 0.15, 0.10]
+ax2.bar(features, importances, color='indigo')
+ax2.set_title('SHAP Feature Importance')
+ax2.set_ylabel('Weight')
 
 plt.tight_layout()
 plt.show()`;
@@ -228,73 +240,71 @@ plt.show()`;
     } else {
       // Seaborn code
       if (seabornPlot === 'relational') {
-        return `# Seaborn Relational Plot
+        return `# Seaborn: Embedding Similarity vs Response Latency
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Set Seaborn theme and aesthetic parameters
+# Set Seaborn theme and palette
 sns.set_theme(style='${snsTheme}', palette='${snsPalette}')
 
-tips = sns.load_dataset('tips')
-
-# Create relational plot with scatter marker
-plt.figure(figsize=(8, 4))
-sns.scatterplot(data=tips, x='total_bill', y='tip', hue='smoker')
-plt.title('Tip vs Total Bill')
+# x: semantic similarity score, y: request latency
+sns.scatterplot(data=df, x='similarity_score', y='latency_ms', hue='cache_hit')
+plt.title('Vector Search Performance: Similarity vs Latency')
+plt.tight_layout()
 plt.show()`;
       } else if (seabornPlot === 'categorical') {
-        return `# Seaborn Categorical Plot
+        return `# Seaborn: Inference Latency by LLM Model Size
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 sns.set_theme(style='${snsTheme}', palette='${snsPalette}')
-tips = sns.load_dataset('tips')
 
-# Categorical plot showing distributions across days
-plt.figure(figsize=(8, 4))
-sns.boxplot(data=tips, x='day', y='total_bill', hue='sex')
-plt.title('Total Bill Distribution by Day')
+# boxplot of response time by tier
+sns.boxplot(data=df, x='model_size', y='latency_seconds', hue='quantised')
+plt.title('LLM Response Time by Parameter Tier')
+plt.tight_layout()
 plt.show()`;
       } else if (seabornPlot === 'distribution') {
-        return `# Seaborn Distribution Plot
+        return `# Seaborn: Prompt Length Distribution with KDE curve
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 sns.set_theme(style='${snsTheme}', palette='${snsPalette}')
-penguins = sns.load_dataset('penguins')
 
-# Distribution plot featuring a Kernel Density Estimate (KDE) line
-plt.figure(figsize=(8, 4))
-sns.histplot(data=penguins, x='flipper_length_mm', kde=True)
-plt.title('Flipper Length Distribution')
+# Plot token histogram with fitted Kernel Density Estimate curve
+sns.histplot(data=df, x='token_length', kde=True)
+plt.title('Prompt Length (Tokens) density map')
+plt.tight_layout()
 plt.show()`;
       } else if (seabornPlot === 'heatmap') {
-        return `# Seaborn Matrix Heatmap
+        return `# Seaborn: Feature Correlation Matrix Heatmap
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 sns.set_theme(style='${snsTheme}', palette='${snsPalette}')
-flights = sns.load_dataset('flights').pivot(index='month', columns='year', values='passengers')
 
-# Visualise matrix tabular data as color-encoded grid
-plt.figure(figsize=(8, 4))
-sns.heatmap(flights, annot=False, cmap='${snsPalette === 'coolwarm' ? 'coolwarm' : 'rocket'}')
-plt.title('Monthly Flight Passenger Numbers')
+# Compute pairwise correlations between model variables
+corr = df[['latency_ms', 'similarity', 'tokens', 'memory_used']].corr()
+
+sns.heatmap(corr, annot=True, cmap='${snsPalette === 'coolwarm' ? 'coolwarm' : 'rocket'}')
+plt.title('Model Performance Pairwise Correlation Matrix')
+plt.tight_layout()
 plt.show()`;
       } else {
-        return `# Seaborn Joint & Margin Distribution Plot
+        return `# Seaborn: Joint Plot of Input Tokens vs Generation Latency
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 sns.set_theme(style='${snsTheme}', palette='${snsPalette}')
-penguins = sns.load_dataset('penguins')
 
-# Show bivariate scatter alongside univariate margins
-g = sns.jointplot(data=penguins, x='bill_length_mm', y='bill_depth_mm', kind='scatter')
+# Joint plot showing bivariate scatter & marginal distributions
+sns.jointplot(data=df, x='input_tokens', y='generation_latency_ms', kind='scatter')
+plt.tight_layout()
 plt.show()`;
       }
     }
   }, [vizLib, matplotlibPlot, seabornPlot, pltStyle, snsTheme, snsPalette, showGrid]);
+
 
   return (
     <div className="flex flex-col w-full h-full bg-[#000000] text-slate-100 overflow-y-auto px-6 py-6 space-y-6">
@@ -336,10 +346,10 @@ plt.show()`;
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Compass className="w-5 h-5 text-indigo-400" /> Random Variables & Normal Distribution
+                  <Compass className="w-5 h-5 text-indigo-400" /> Model Inference Latency & Z-Scores
                 </h3>
                 <p className="text-slate-400 text-xs mt-1">
-                  Explore discrete/continuous random variables, z-scores, and probability density functions.
+                  Explore continuous random variables by measuring model response times and verifying SLA compliance.
                 </p>
               </div>
               <div className="text-[10px] font-mono bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 px-2.5 py-1 rounded">
@@ -357,8 +367,8 @@ plt.show()`;
                     <Tooltip contentStyle={{ backgroundColor: '#111', borderColor: '#333', color: '#fff' }} />
                     <Area type="monotone" dataKey="y" stroke="#6366f1" fill="#4f46e5" fillOpacity={0.15} />
                     <Area type="monotone" dataKey="shadedY" stroke="none" fill="#10b981" fillOpacity={0.4} />
-                    <ReferenceLine x={mean} stroke="#f59e0b" strokeDasharray="3 3" label={{ value: 'Mean (μ)', fill: '#f59e0b', fontSize: 10, position: 'top' }} />
-                    <ReferenceLine x={targetX} stroke="#10b981" strokeWidth={2} label={{ value: `X = ${targetX}`, fill: '#10b981', fontSize: 11, position: 'top' }} />
+                    <ReferenceLine x={mean} stroke="#f59e0b" strokeDasharray="3 3" label={{ value: 'Mean Latency (μ)', fill: '#f59e0b', fontSize: 10, position: 'top' }} />
+                    <ReferenceLine x={targetX} stroke="#10b981" strokeWidth={2} label={{ value: `SLA Limit X = ${targetX}ms`, fill: '#10b981', fontSize: 11, position: 'top' }} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -366,32 +376,32 @@ plt.show()`;
               <div className="flex flex-col gap-5 justify-between">
                 <div className="space-y-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Population Mean (μ): {mean}</label>
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Mean Latency (μ): {mean}ms</label>
                     <input type="range" min="20" max="80" value={mean} onChange={e => setMean(Number(e.target.value))} className="accent-indigo-500 w-full" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Standard Deviation (σ): {std}</label>
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Latency Std Dev (σ): {std}ms</label>
                     <input type="range" min="5" max="25" value={std} onChange={e => setStd(Number(e.target.value))} className="accent-indigo-500 w-full" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Test Value (x): {targetX}</label>
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">SLA Target Limit (x): {targetX}ms</label>
                     <input type="range" min="10" max="90" value={targetX} onChange={e => setTargetX(Number(e.target.value))} className="accent-emerald-500 w-full" />
                   </div>
                 </div>
 
                 <div className="bg-black/60 rounded-xl p-4 border border-white/5 space-y-2 font-mono text-xs text-slate-300">
                   <div className="flex justify-between border-b border-white/5 pb-1">
-                    <span>Z-Score:</span>
+                    <span>Latency Z-Score:</span>
                     <span className="font-bold text-indigo-400">{zScore}</span>
                   </div>
                   <div className="flex justify-between border-b border-white/5 pb-1">
-                    <span>P(X ≤ {targetX}):</span>
+                    <span>P(Latency ≤ {targetX}ms):</span>
                     <span className="font-bold text-emerald-400">
                       {zScore >= 0 ? (0.5 + (0.5 * (1 - Math.exp(-2 * Math.pow(zScore, 2) / Math.PI)))).toFixed(4) : (0.5 - (0.5 * (1 - Math.exp(-2 * Math.pow(zScore, 2) / Math.PI)))).toFixed(4)}
                     </span>
                   </div>
                   <div className="text-[10px] text-slate-500 leading-normal pt-1">
-                    A z-score of {zScore} tells us how many standard deviations the value {targetX} is from the mean ({mean}).
+                    A z-score of {zScore} tells us that the SLA limit of {targetX}ms is {Math.abs(zScore)} standard deviations from the mean latency ({mean}ms).
                   </div>
                 </div>
               </div>
@@ -403,15 +413,15 @@ plt.show()`;
             <div className="bg-[#111116] border border-white/5 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
-                  <Layers className="w-5 h-5 text-sky-400" /> Foundations of Probability & Bayes' Theorem
+                  <Layers className="w-5 h-5 text-sky-400" /> Bayes' Theorem & Anomaly Detection Filters
                 </h3>
                 <p className="text-slate-400 text-xs mb-6">
-                  Adjust inputs to recalculate conditional probability using Bayes' Theorem: P(A|B) = [P(B|A)P(A)] / P(B).
+                  Adjust inputs to calculate the posterior probability of fraud: P(Fraud | Flagged) = [P(Flagged | Fraud)P(Fraud)] / P(Flagged).
                 </p>
 
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">Prior P(A)</span>
+                    <span className="text-[10px] font-mono text-slate-500 uppercase">Prior P(Fraud)</span>
                     <input 
                       type="number" step="0.05" min="0.01" max="0.99" value={pA} 
                       onChange={e => setPA(Math.max(0.01, Math.min(0.99, Number(e.target.value))))}
@@ -419,7 +429,7 @@ plt.show()`;
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">Sensitivity P(B|A)</span>
+                    <span className="text-[10px] font-mono text-slate-500 uppercase">Sensitivity P(Flagged|Fraud)</span>
                     <input 
                       type="number" step="0.05" min="0.01" max="0.99" value={pBgivenA} 
                       onChange={e => setPBgivenA(Math.max(0.01, Math.min(0.99, Number(e.target.value))))}
@@ -427,7 +437,7 @@ plt.show()`;
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">False Pos P(B|¬A)</span>
+                    <span className="text-[10px] font-mono text-slate-500 uppercase">False Pos P(Flagged|Legit)</span>
                     <input 
                       type="number" step="0.05" min="0.01" max="0.99" value={pBgivenNotA} 
                       onChange={e => setPBgivenNotA(Math.max(0.01, Math.min(0.99, Number(e.target.value))))}
@@ -438,18 +448,18 @@ plt.show()`;
 
                 <div className="space-y-2 border-t border-white/5 pt-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Probability of Evidence P(B):</span>
+                    <span className="text-slate-400">Total Flagged Probability P(Flagged):</span>
                     <span className="font-mono text-white font-bold">{pB.toFixed(4)}</span>
                   </div>
                   <div className="flex justify-between text-base border-b border-white/5 pb-2">
-                    <span className="text-slate-200 font-bold">Posterior Probability P(A|B):</span>
+                    <span className="text-slate-200 font-bold">Posterior P(Fraud | Flagged):</span>
                     <span className="font-mono text-emerald-400 font-extrabold">{pAgivenB.toFixed(4)}</span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-4 bg-sky-500/5 border border-sky-500/10 p-4 rounded-xl text-xs text-slate-300 leading-relaxed">
-                <strong>Real World Analogy:</strong> Even with a highly sensitive test (90% accurate), if the disease rate P(A) is very low (30%), a positive test result only gives an actual probability of disease P(A|B) = {pAgivenB.toFixed(2)} due to false positives in the healthy population.
+                <strong>Real World Analogy:</strong> Even with a highly sensitive detector (90% accurate), if the baseline fraud rate P(Fraud) is low (30%), a flagged transaction only has a P(Fraud | Flagged) = {pAgivenB.toFixed(2)} probability of being actual fraud due to false positives in the massive pool of legitimate transactions.
               </div>
             </div>
 
@@ -458,10 +468,10 @@ plt.show()`;
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                    <RefreshCw className="w-5 h-5 text-emerald-400" /> CLT & LLN Convergence Simulator
+                    <RefreshCw className="w-5 h-5 text-emerald-400" /> CLT & Request Volatility Simulator
                   </h3>
                   <p className="text-slate-400 text-xs mt-1">
-                    Draw sample means from bimodal/skewed populations to verify convergence to normality.
+                    Draw sample averages of request logs from skewed user sessions to verify convergence for capacity autoscaling.
                   </p>
                 </div>
                 <button 
@@ -602,7 +612,10 @@ plt.show()`;
                         onClick={() => setMatplotlibPlot(type)}
                         className={`text-left text-xs p-3 rounded-xl border transition-all ${matplotlibPlot === type ? 'bg-[#0078d4]/10 border-[#0078d4] text-white font-bold' : 'bg-black/30 border-white/5 text-slate-400 hover:border-slate-800 hover:text-slate-200'}`}
                       >
-                        {type.toUpperCase()} PLOT
+                        {type === 'line' ? 'Model Training Loss (Line)' :
+                         type === 'scatter' ? 'LR Hyperparameter Tuning (Scatter)' :
+                         type === 'histogram' ? 'Prompt Token Distribution (Hist)' :
+                         type === 'contour' ? 'Loss Landscape Surface (Contour)' : 'Model Performance Dashboard (Subplots)'}
                       </button>
                     ))}
                   </div>
@@ -614,10 +627,10 @@ plt.show()`;
                         onClick={() => setSeabornPlot(type)}
                         className={`text-left text-xs p-3 rounded-xl border transition-all ${seabornPlot === type ? 'bg-[#0078d4]/10 border-[#0078d4] text-white font-bold' : 'bg-black/30 border-white/5 text-slate-400 hover:border-slate-800 hover:text-slate-200'}`}
                       >
-                        {type === 'relational' ? 'RELATIONAL (sns.scatterplot)' :
-                         type === 'categorical' ? 'CATEGORICAL (sns.boxplot)' :
-                         type === 'distribution' ? 'DISTRIBUTION (sns.histplot)' :
-                         type === 'heatmap' ? 'MATRIX (sns.heatmap)' : 'JOINT (sns.jointplot)'}
+                        {type === 'relational' ? 'Vector Similarity vs Latency (scatterplot)' :
+                         type === 'categorical' ? 'Inference Time by Model size (boxplot)' :
+                         type === 'distribution' ? 'Prompt Length Distribution (histplot)' :
+                         type === 'heatmap' ? 'Pairwise Feature Correlations (heatmap)' : 'Tokens vs Request Latency (jointplot)'}
                       </button>
                     ))}
                   </div>
