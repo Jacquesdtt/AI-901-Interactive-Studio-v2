@@ -569,8 +569,44 @@ plt.show()`;
               </div>
             </div>
           </div>
-          
-        </div>
+
+          {/* Real World Problems Context */}
+            <div className="bg-[#161622] border border-[#0078d4]/20 rounded-2xl p-6 shadow-xl space-y-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Info className="w-5 h-5 text-[#0078d4]" /> Real-World Engineering Problems &amp; UI Mapping
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs leading-normal">
+                <div className="space-y-2">
+                  <strong className="text-slate-200 block font-sans">SLA Compliance &amp; Latency Profiles</strong>
+                  <p className="text-slate-400 leading-relaxed">
+                    <strong>Problem:</strong> As a Platform Engineer, you must guarantee that 95% of API requests finish under a set threshold.
+                  </p>
+                  <p className="text-slate-400 leading-relaxed">
+                    <strong>UI Mapping:</strong> Adjust the Mean (server response average) and Std Dev (server volatility) sliders. Setting SLA Target X (e.g. 60ms) shades the compliant zone green, showing the exact percentage of requests satisfying the SLA.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <strong className="text-slate-200 block font-sans font-bold">Fraud Filters &amp; The Base-Rate Fallacy</strong>
+                  <p className="text-slate-400 leading-relaxed">
+                    <strong>Problem:</strong> Anomaly detection engines flag rare fraudulent events. Because fraud is extremely rare, even a 95% sensitive classifier generates mostly false alarms, causing operational fatigue.
+                  </p>
+                  <p className="text-slate-400 leading-relaxed">
+                    <strong>UI Mapping:</strong> Modify the Prior P(Fraud), Sensitivity, and False Positive rate input fields. The calculated Posterior P(Fraud | Flagged) displays the actual percentage of flagged transactions that are truly fraud, showing why false-positive reduction is the primary engineering bottleneck.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <strong className="text-slate-200 block font-sans">Workload Autoscaling &amp; CLT Smoothing</strong>
+                  <p className="text-slate-400 leading-relaxed">
+                    <strong>Problem:</strong> Raw server request logs are highly volatile (power-law traffic peaks). Creating auto-scaling triggers directly on raw peaks causes unstable server thrashing.
+                  </p>
+                  <p className="text-slate-400 leading-relaxed">
+                    <strong>UI Mapping:</strong> Select the skewed population type. Click "Draw Samples" to fetch averages of request batches. As you draw samples, the average request rate forms a smooth normal curve. Engineers write scaling logic on this smoothed curve to filter out peak volatility.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+          </div>
       ) : (
         <div className="space-y-6">
           {/* Module 2: Python Visualisation Studio */}
@@ -831,6 +867,42 @@ plt.show()`;
                 </div>
                 <div className="bg-black/60 border border-white/5 rounded-xl p-4 font-mono text-xs text-sky-300 whitespace-pre overflow-x-auto max-h-[200px]">
                   {generatedCode}
+                </div>
+              </div>
+
+              {/* Real World Problems Context */}
+              <div className="bg-[#161622] border border-[#0078d4]/20 rounded-2xl p-6 shadow-xl space-y-4">
+                <h5 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Info className="w-4 h-4 text-[#0078d4]" /> How Plot Configurations Solve Real-World ML Tasks
+                </h5>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs leading-normal">
+                  <div className="space-y-2">
+                    <strong className="text-slate-200 block">Diagnosing Overfitting / Training Convergence</strong>
+                    <p className="text-slate-400 leading-relaxed">
+                      <strong>Problem:</strong> Training deep neural networks without a loss history graph leaves you blind to whether the model is learning, stagnating, or overfitting.
+                    </p>
+                    <p className="text-slate-400 leading-relaxed">
+                      <strong>UI Mapping:</strong> Select <em>Matplotlib Line Plot</em>. It plots train vs. validation loss over training iterations (epochs). If validation loss starts rising while training loss drops, it indicates overfitting.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <strong className="text-slate-200 block">Hyperparameter Space Sweeps</strong>
+                    <p className="text-slate-400 leading-relaxed">
+                      <strong>Problem:</strong> Grid/Random sweeps generate hundreds of trial accuracy outputs. You need to visually locate regions of optimal hyperparameter bounds.
+                    </p>
+                    <p className="text-slate-400 leading-relaxed">
+                      <strong>UI Mapping:</strong> Select <em>Matplotlib Scatter Plot</em>. It plots Learning Rate vs. Validation Accuracy. You use it to locate the sweet-spot learning rate where performance peaks before collapsing due to gradient explosion.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <strong className="text-slate-200 block">Collinearity &amp; Correlation Redundancy</strong>
+                    <p className="text-slate-400 leading-relaxed">
+                      <strong>Problem:</strong> Training models on highly correlated input variables (collinearity) introduces statistical instability, inflates parameter variance, and wastes computation.
+                    </p>
+                    <p className="text-slate-400 leading-relaxed">
+                      <strong>UI Mapping:</strong> Select <em>Seaborn Heatmap</em>. It computes pairwise feature correlations. High values (near 1.0 or -1.0) suggest redundant features that should be filtered out during feature engineering.
+                    </p>
+                  </div>
                 </div>
               </div>
 
