@@ -167,56 +167,102 @@ export default function StudyPlanTab() {
           </div>
         </div>
 
-        {/* AI-900 vs AI-901 Diff */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white">AI-900 vs. AI-901 Differences</h2>
-          <div className="bg-[#121b2d] border border-[#0078d4]/20 rounded-xl overflow-hidden shadow-xl">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-[#0078d4]/10 border-b border-[#0078d4]/20">
-                <tr>
-                  <th className="p-4 font-semibold text-slate-200">Aspect</th>
-                  <th className="p-4 font-semibold text-slate-400">Legacy AI-900</th>
-                  <th className="p-4 font-semibold text-[#0078d4]">New AI-901</th>
-                </tr>
-              </thead>
+        {/* AI-900 vs AI-901 Diff & Exam Prep Focus Guide */}
+        <div className="space-y-6">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <CheckSquare className="w-5 h-5 text-[#0078d4]" /> AI-901 Exam Prep Focus Guide
+          </h2>
+          
+          <p className="text-sm text-slate-400">
+            Below is the mapping of the official AI-901 syllabus areas to the specific interactive tabs in this Studio. Use this guide to target your study.
+          </p>
+
+          <div className="space-y-4">
+            {/* Area 1 */}
+            <div className="bg-[#121b2d]/80 border border-[#0078d4]/20 rounded-xl p-5 shadow-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <h4 className="text-sm font-bold text-white">1. Foundations &amp; Responsible AI</h4>
+                <span className="text-[10px] font-mono bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded font-bold">15-20% OF EXAM</span>
+              </div>
+              <p className="text-xs text-slate-300">
+                Concepts: Six Responsible AI principles, data distributions, normal curve, z-scores, Bayes' theorem.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">D1: Foundations</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">SRS Flashcards</span>
+              </div>
+            </div>
+
+            {/* Area 2 */}
+            <div className="bg-[#121b2d]/80 border border-[#0078d4]/20 rounded-xl p-5 shadow-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <h4 className="text-sm font-bold text-white">2. ML &amp; Deep Learning Pipelines</h4>
+                <span className="text-[10px] font-mono bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">25-30% OF EXAM</span>
+              </div>
+              <p className="text-xs text-slate-300">
+                Concepts: Regression, Classification, Clustering, StandardScaler, RandomForest, Backpropagation, PyTorch.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">D2: ML</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">D3: Deep Learning</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">Interactive Sandbox</span>
+              </div>
+            </div>
+
+            {/* Area 3 */}
+            <div className="bg-[#121b2d]/80 border border-[#0078d4]/20 rounded-xl p-5 shadow-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <h4 className="text-sm font-bold text-white">3. Generative AI &amp; Foundry SDK</h4>
+                <span className="text-[10px] font-mono bg-amber-500/10 border border-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">30-35% OF EXAM</span>
+              </div>
+              <p className="text-xs text-slate-300">
+                Concepts: Prompt Engineering, temperature/top_p parameter tuning, Agent tool calling, RAG patterns.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">D4: GenAI</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">Architecture Builder</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">Docs Explorer</span>
+              </div>
+            </div>
+
+            {/* Area 4 */}
+            <div className="bg-[#121b2d]/80 border border-[#0078d4]/20 rounded-xl p-5 shadow-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <h4 className="text-sm font-bold text-white">4. Cognitive Services &amp; MLOps</h4>
+                <span className="text-[10px] font-mono bg-purple-500/10 border border-purple-500/20 text-purple-400 px-2 py-0.5 rounded font-bold">15-20% OF EXAM</span>
+              </div>
+              <p className="text-xs text-slate-300">
+                Concepts: Azure Content Safety, Document Intelligence, DevOps CI/CD, MLflow metrics logging, Docker containerisation.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">D5: Azure AI</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">D6: DevOps</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#0078d4]/20 text-[#0078d4] border border-[#0078d4]/30">D7: MLOps</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#121b2d] border border-[#0078d4]/20 rounded-xl overflow-hidden shadow-xl mt-6">
+            <div className="p-4 bg-[#0078d4]/10 border-b border-[#0078d4]/20 font-bold text-sm text-slate-200">
+              AI-900 vs. AI-901 Quick Reference
+            </div>
+            <table className="w-full text-left text-xs">
               <tbody className="divide-y divide-white/5">
-                <tr className="bg-[#121b2d] hover:bg-[#162137] transition-colors">
-                  <td className="p-4 font-mono text-xs text-slate-400">Focus</td>
-                  <td className="p-4 text-slate-400">Describe workloads</td>
-                  <td className="p-4 text-[#0078d4] font-medium">Implement solutions in Foundry</td>
+                <tr className="hover:bg-[#162137] transition-colors">
+                  <td className="p-3 font-mono text-slate-400">Emphasis</td>
+                  <td className="p-3 text-slate-400">Legacy AI-900 was 100% conceptual (no code).</td>
+                  <td className="p-3 text-[#0078d4] font-medium">New AI-901 requires Python SDK &amp; API coding.</td>
                 </tr>
-                <tr className="bg-[#000000] hover:bg-[#162137] transition-colors">
-                  <td className="p-4 font-mono text-xs text-slate-400">Domains</td>
-                  <td className="p-4 text-slate-400">5 domains</td>
-                  <td className="p-4 text-[#0078d4] font-medium">2 domains</td>
-                </tr>
-                <tr className="bg-[#121b2d] hover:bg-[#162137] transition-colors">
-                  <td className="p-4 font-mono text-xs text-slate-400">Coding</td>
-                  <td className="p-4 text-slate-400">None</td>
-                  <td className="p-4 text-[#0078d4] font-medium">Yes (Python, REST APIs, SDKs)</td>
-                </tr>
-                <tr className="bg-[#000000] hover:bg-[#162137] transition-colors">
-                  <td className="p-4 font-mono text-xs text-slate-400">Emphasis</td>
-                  <td className="p-4 text-slate-400">Individual Cognitive Services</td>
-                  <td className="p-4 text-[#0078d4] font-medium">Foundry unified platform</td>
-                </tr>
-                <tr className="bg-[#121b2d] hover:bg-[#162137] transition-colors">
-                  <td className="p-4 font-mono text-xs text-slate-400">Additions</td>
-                  <td className="p-4 text-slate-400">—</td>
-                  <td className="p-4 text-[#0078d4] font-medium">Agentic AI, Content Understanding</td>
-                </tr>
-                <tr className="bg-[#000000] hover:bg-[#162137] transition-colors">
-                  <td className="p-4 font-mono text-xs text-slate-400">Removals</td>
-                  <td className="p-4 text-slate-400">Bot Service, Form Recognizer</td>
-                  <td className="p-4 text-slate-500">—</td>
+                <tr className="hover:bg-[#162137] transition-colors">
+                  <td className="p-3 font-mono text-slate-400">Key Platforms</td>
+                  <td className="p-3 text-slate-400">Azure Portal, Custom Vision Portal.</td>
+                  <td className="p-3 text-[#0078d4] font-medium">Azure AI Foundry, SDK tool calling.</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 }

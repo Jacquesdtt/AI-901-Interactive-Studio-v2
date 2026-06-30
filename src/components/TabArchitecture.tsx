@@ -58,7 +58,7 @@ export default function TabArchitecture() {
   const [activeScenarioId, setActiveScenarioId] = useState(scenarios[0].id);
   const scenario = scenarios.find(s => s.id === activeScenarioId)!;
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(scenario.nodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState(JSON.parse(JSON.stringify(scenario.nodes)));
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -72,7 +72,7 @@ export default function TabArchitecture() {
   const handleScenarioChange = (id: string) => {
     setActiveScenarioId(id);
     const s = scenarios.find(x => x.id === id)!;
-    setNodes(s.nodes);
+    setNodes(JSON.parse(JSON.stringify(s.nodes)));
     setEdges([]);
     setFeedback(null);
   };
@@ -163,7 +163,7 @@ export default function TabArchitecture() {
         </div>
       )}
 
-        <div className="flex-1 min-h-[500px] bg-[#050505] rounded-2xl border border-white/10 overflow-hidden relative">
+        <div className="w-full h-[600px] bg-[#050505] rounded-2xl border border-white/10 overflow-hidden relative">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -179,6 +179,7 @@ export default function TabArchitecture() {
           </ReactFlow>
         </div>
       </div>
+    </div>
     </div>
   );
 }
