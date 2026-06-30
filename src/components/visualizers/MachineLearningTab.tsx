@@ -3,6 +3,7 @@ import { Cpu, Database, Settings2, LineChart, ArrowRight, CheckCircle2 } from 'l
 
 export default function MachineLearningTab() {
   const [activeStep, setActiveStep] = useState(0);
+  const [selectedTree, setSelectedTree] = useState<number | null>(null);
 
   const steps = [
     { id: 'data', title: 'Data Ingestion', icon: Database, desc: 'Load CSV, handle missing values, Train/Test split.' },
@@ -223,22 +224,106 @@ export default function MachineLearningTab() {
 
                 {/* Trees columns */}
                 <div className="grid grid-cols-3 gap-4 w-full">
-                  <div className="bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col items-center text-center shadow-sm">
-                    <span className="text-xs font-bold text-slate-400">Decision Tree 1</span>
+                  <div 
+                    onClick={() => setSelectedTree(1)}
+                    className={`border p-3 flex flex-col items-center text-center shadow-sm cursor-pointer rounded-lg transition-all ${selectedTree === 1 ? 'bg-[#0078d4]/10 border-[#0078d4] scale-105' : 'bg-black/30 border-white/5 hover:border-slate-700'}`}
+                  >
+                    <span className="text-xs font-bold text-slate-300">Decision Tree 1</span>
                     <span className="text-[10px] text-slate-500 mt-1">Prediction</span>
                     <span className="text-sm font-bold text-sky-400 mt-0.5">15.5</span>
+                    <span className="text-[8px] text-[#0078d4] mt-1 underline">Show Logic</span>
                   </div>
-                  <div className="bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col items-center text-center shadow-sm">
-                    <span className="text-xs font-bold text-slate-400">Decision Tree 2</span>
+                  <div 
+                    onClick={() => setSelectedTree(2)}
+                    className={`border p-3 flex flex-col items-center text-center shadow-sm cursor-pointer rounded-lg transition-all ${selectedTree === 2 ? 'bg-[#0078d4]/10 border-[#0078d4] scale-105' : 'bg-black/30 border-white/5 hover:border-slate-700'}`}
+                  >
+                    <span className="text-xs font-bold text-slate-300">Decision Tree 2</span>
                     <span className="text-[10px] text-slate-500 mt-1">Prediction</span>
                     <span className="text-sm font-bold text-sky-400 mt-0.5">17.2</span>
+                    <span className="text-[8px] text-[#0078d4] mt-1 underline">Show Logic</span>
                   </div>
-                  <div className="bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col items-center text-center shadow-sm">
-                    <span className="text-xs font-bold text-slate-400">Decision Tree 3</span>
+                  <div 
+                    onClick={() => setSelectedTree(3)}
+                    className={`border p-3 flex flex-col items-center text-center shadow-sm cursor-pointer rounded-lg transition-all ${selectedTree === 3 ? 'bg-[#0078d4]/10 border-[#0078d4] scale-105' : 'bg-black/30 border-white/5 hover:border-slate-700'}`}
+                  >
+                    <span className="text-xs font-bold text-slate-300">Decision Tree 3</span>
                     <span className="text-[10px] text-slate-500 mt-1">Prediction</span>
                     <span className="text-sm font-bold text-sky-400 mt-0.5">16.1</span>
+                    <span className="text-[8px] text-[#0078d4] mt-1 underline">Show Logic</span>
                   </div>
                 </div>
+
+                {/* Decision Paths (Conditional details) */}
+                {selectedTree !== null && (
+                  <div className="w-full bg-[#181820] border border-slate-700/50 rounded-lg p-4 mt-4 text-xs space-y-3 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                      <strong className="text-sky-400">🌳 Decision Tree {selectedTree} Splitting Logic Path</strong>
+                      <button 
+                        onClick={() => setSelectedTree(null)}
+                        className="text-[10px] text-slate-500 hover:text-white"
+                      >
+                        Close [x]
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {selectedTree === 1 && (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="bg-slate-700 px-1.5 py-0.5 rounded text-[9px] font-mono">ROOT</span>
+                            <span className="text-slate-300">Is <code className="text-indigo-400 font-mono">Age &le; 45</code>?</span>
+                            <span className="text-emerald-400 font-bold">Yes</span>
+                          </div>
+                          <div className="flex items-center gap-2 pl-4 border-l border-slate-800">
+                            <span className="bg-slate-700 px-1.5 py-0.5 rounded text-[9px] font-mono">NODE 1</span>
+                            <span className="text-slate-300">Is <code className="text-indigo-400 font-mono">Salary &le; 50k</code>?</span>
+                            <span className="text-emerald-400 font-bold">Yes</span>
+                          </div>
+                          <div className="flex items-center gap-2 pl-8 border-l border-slate-800">
+                            <span className="bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded text-[9px] font-mono">LEAF</span>
+                            <span className="text-slate-400">Mean of training samples in leaf is <strong className="text-white">15.5</strong></span>
+                          </div>
+                        </>
+                      )}
+                      {selectedTree === 2 && (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="bg-slate-700 px-1.5 py-0.5 rounded text-[9px] font-mono">ROOT</span>
+                            <span className="text-slate-300">Is <code className="text-indigo-400 font-mono">Age &le; 45</code>?</span>
+                            <span className="text-emerald-400 font-bold">Yes</span>
+                          </div>
+                          <div className="flex items-center gap-2 pl-4 border-l border-slate-800">
+                            <span className="bg-slate-700 px-1.5 py-0.5 rounded text-[9px] font-mono">NODE 1</span>
+                            <span className="text-slate-300">Is <code className="text-indigo-400 font-mono">Years Experience &le; 5</code>?</span>
+                            <span className="text-rose-400 font-bold">No</span>
+                          </div>
+                          <div className="flex items-center gap-2 pl-8 border-l border-slate-800">
+                            <span className="bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded text-[9px] font-mono">LEAF</span>
+                            <span className="text-slate-400">Mean of training samples in leaf is <strong className="text-white">17.2</strong></span>
+                          </div>
+                        </>
+                      )}
+                      {selectedTree === 3 && (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="bg-slate-700 px-1.5 py-0.5 rounded text-[9px] font-mono">ROOT</span>
+                            <span className="text-slate-300">Is <code className="text-indigo-400 font-mono">Salary &le; 60k</code>?</span>
+                            <span className="text-emerald-400 font-bold">Yes</span>
+                          </div>
+                          <div className="flex items-center gap-2 pl-4 border-l border-slate-800">
+                            <span className="bg-slate-700 px-1.5 py-0.5 rounded text-[9px] font-mono">NODE 1</span>
+                            <span className="text-slate-300">Is <code className="text-indigo-400 font-mono">Age &le; 30</code>?</span>
+                            <span className="text-rose-400 font-bold">No</span>
+                          </div>
+                          <div className="flex items-center gap-2 pl-8 border-l border-slate-800">
+                            <span className="bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded text-[9px] font-mono">LEAF</span>
+                            <span className="text-slate-400">Mean of training samples in leaf is <strong className="text-white">16.1</strong></span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Convergence Lines */}
                 <div className="w-3/4 h-6 border-t border-l border-r border-slate-700 relative mt-4">
