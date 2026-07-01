@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, AlertTriangle, CheckCircle2, CheckCircle, Target, Trophy, Clock } from 'lucide-react';
+import { Calendar, AlertTriangle, CheckCircle2, CheckCircle, Target, Trophy, Clock, CheckSquare } from 'lucide-react';
 
 const milestonePlan = [
   {
@@ -20,7 +20,7 @@ const milestonePlan = [
     projects: [
       'Deploy an OpenAI Model: Provision an Azure OpenAI resource, deploy a model, and use the Chat Playground.',
       'Prompt Engineering Sandbox: Test zero-shot, few-shot, and system message variations.',
-      'SDK Quickstart: Authenticate using foundry_check_auth() and list available models.'
+      'SDK Quickstart: Authenticate using DefaultAzureCredential and initialize the AIProjectClient.'
     ]
   },
   {
@@ -49,13 +49,21 @@ const milestonePlan = [
 
 export default function StudyPlanTab() {
   const [completed, setCompleted] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem('ai901-milestones');
-    if (saved) return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem('ai901-milestones');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn("Failed to read milestones from localStorage:", e);
+    }
     return {};
   });
 
   useEffect(() => {
-    localStorage.setItem('ai901-milestones', JSON.stringify(completed));
+    try {
+      localStorage.setItem('ai901-milestones', JSON.stringify(completed));
+    } catch (e) {
+      console.warn("Failed to save milestones to localStorage:", e);
+    }
   }, [completed]);
 
   const toggleMilestone = (id: string) => {

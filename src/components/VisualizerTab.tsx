@@ -30,9 +30,7 @@ export default function VisualizerTab() {
     "infrastructure",
   );
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
-  const [selectedFile, setSelectedFile] = useState<
-    ".env" | "app.py" | "agent_client.py" | "requirements.txt"
-  >("app.py");
+  const [selectedFile, setSelectedFile] = useState<string | undefined>("app.py");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playSpeed, setPlaySpeed] = useState<number>(1); // 1x, 1.5x, 2x, 0.5x
   const [activeSubTab, setActiveSubTab] = useState<

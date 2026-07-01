@@ -1,4 +1,5 @@
-export type ActiveTab = 'dashboard' | 'domain1' | 'domain2' | 'domain3' | 'domain4' | 'domain5' | 'domain6' | 'domain7' | 'study-plan' | 'exam' | 'secret' | 'cheat-sheet' | 'onboarding' | 'sandbox' | 'flashcards' | 'architecture' | 'docs';
+export type ActiveTab = 'dashboard' | 'domain1' | 'domain2' | 'domain3' | 'domain4' | 'domain5' | 'domain6' | 'domain7' | 'study-plan' | 'exam' | 'secret' | 'cheat-sheet' | 'onboarding' | 'sandbox' | 'flashcards' | 'architecture' | 'docs' | 'streamlit' | 'pgvector' | 'tensor' | 'optimizer' | 'mcts' | 'tutorial' | 'azure-simulator' | 'transformer-viz' | 'backprop-sandbox' | 'rag-pipeline' | 'foundry-quickstart' | 'lofi-study' | 'exam-calendar' | 'nn-explorer';
+
 
 export interface FlashcardState {
   id: string;
@@ -41,11 +42,19 @@ export interface ChaosState {
 }
 
 export interface ExecutionStep {
-  id: string;
-  agent: string;
-  action: string;
-  payload: any;
-  status: 'pending' | 'running' | 'success' | 'error';
+  id: string | number;
+  agent?: string;
+  action?: string;
+  payload?: any;
+  status?: 'pending' | 'running' | 'success' | 'error';
+  file?: string;
+  logs?: string[];
+  title?: string;
+  examTip?: string;
+  codeSnippet?: string;
+  highlightLines?: number[];
+  analogy?: string;
+  description?: string;
 }
 
 export type QuestionDifficulty = 'easy' | 'medium' | 'hard';

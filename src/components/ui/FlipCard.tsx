@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RotateCw } from 'lucide-react';
 
 interface FlipCardProps {
+  key?: string | number;
   question: string;
   answer: string;
   topic: string;

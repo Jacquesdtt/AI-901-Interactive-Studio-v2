@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   GraduationCap, ExternalLink, Calendar, CheckSquare, Sparkles, Network, Server, Target, Layers, 
-  Bot, Box, ShieldAlert, Brain, FileText, Code, BookOpen
+  Bot, Box, ShieldAlert, Brain, FileText, Code, BookOpen, LayoutTemplate, Database, Headphones
 } from 'lucide-react';
 
 import UnifiedDashboard from './components/domains/UnifiedDashboard';
@@ -22,6 +22,20 @@ import TabSandbox from './components/TabSandbox';
 import TabFlashcards from './components/TabFlashcards';
 import TabArchitecture from './components/TabArchitecture';
 import TabDocs from './components/TabDocs';
+import TabStreamlit from './components/TabStreamlit';
+import TabPgvector from './components/TabPgvector';
+import TabTensor from './components/TabTensor';
+import TabOptimizer from './components/TabOptimizer';
+import TabMCTS from './components/mcts/TabMCTS';
+import TabTutorial from './components/TabTutorial';
+import TabAzureSimulator from './components/TabAzureSimulator';
+import TabTransformerViz from './components/TabTransformerViz';
+import TabBackpropSandbox from './components/TabBackpropSandbox';
+import TabNeuralExplorer from './components/TabNeuralExplorer';
+import TabRagPipeline from './components/TabRagPipeline';
+import TabFoundryQuickstart from './components/TabFoundryQuickstart';
+import TabLofiStudy from './components/TabLofiStudy';
+import TabExamCalendar from './components/TabExamCalendar';
 import { ActiveTab } from './types';
 import { useMastery } from './context/MasteryContext';
 
@@ -31,6 +45,19 @@ export default function App() {
   // Check if all scores are 0 (first launch)
   const isFirstLaunch = Object.values(mastery.domainScores).every(score => score === 0);
   const [activeTab, setActiveTab] = useState<ActiveTab>(isFirstLaunch ? 'onboarding' : 'dashboard');
+
+  useEffect(() => {
+    const handleSwitchTab = (event: Event) => {
+      const tabId = (event as CustomEvent).detail as ActiveTab;
+      if (tabId) {
+        setActiveTab(tabId);
+      }
+    };
+    window.addEventListener('switch-tab', handleSwitchTab);
+    return () => {
+      window.removeEventListener('switch-tab', handleSwitchTab);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#000000] text-slate-100 overflow-hidden font-sans" id="app-shell">
@@ -60,7 +87,7 @@ export default function App() {
           {/* Secondary Links */}
           <div className="hidden lg:flex items-center gap-4">
             <a
-              href="https://learn.microsoft.com/en-us/credentials/certifications/exams/ai-900/"
+              href="https://learn.microsoft.com/en-us/credentials/certifications/exams/ai-901/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-slate-400 hover:text-[#0078d4] transition-colors flex items-center gap-1 font-mono"
@@ -81,6 +108,15 @@ export default function App() {
           
           <button onClick={() => setActiveTab('dashboard')} className={navBtnClass(activeTab === 'dashboard')}>
             <Sparkles className="w-3.5 h-3.5 shrink-0" /><span>Dashboard</span>
+          </button>
+          
+          <button 
+              onClick={() => setActiveTab('tutorial')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'tutorial' ? 'bg-indigo-500 text-white shadow-lg' : 'text-indigo-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" /> Guide
           </button>
 
           <span className="px-3 ml-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase border-x border-white/10 mx-1 shrink-0">Curriculum</span>
@@ -109,6 +145,24 @@ export default function App() {
           
           <span className="px-3 ml-2 text-[10px] font-bold tracking-widest text-amber-500 uppercase border-x border-white/10 mx-1 shrink-0">Assess</span>
 
+          <button 
+              onClick={() => setActiveTab('streamlit')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'streamlit' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <LayoutTemplate className="w-3.5 h-3.5" /> Streamlit
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('pgvector')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'pgvector' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Database className="w-3.5 h-3.5" /> pgvector
+          </button>
+
           <button onClick={() => setActiveTab('cheat-sheet')} className={navBtnClass(activeTab === 'cheat-sheet', false, true)}>
             <FileText className="w-3.5 h-3.5 shrink-0" /><span>Cheat Sheet</span>
           </button>
@@ -122,6 +176,105 @@ export default function App() {
               }`}
             >
               <Code className="w-3.5 h-3.5" /> Sandbox
+          </button>
+          
+          <button 
+              onClick={() => setActiveTab('tensor')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'tensor' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Box className="w-3.5 h-3.5" /> Tensor Sandbox
+          </button>
+          
+          <button 
+              onClick={() => setActiveTab('optimizer')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'optimizer' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Target className="w-3.5 h-3.5" /> 3D Optimizer
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('mcts')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'mcts' ? 'bg-indigo-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Network className="w-3.5 h-3.5" /> MCTS Simulator
+          </button>
+          
+          <button 
+              onClick={() => setActiveTab('azure-simulator')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'azure-simulator' ? 'bg-[#0078d4] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Server className="w-3.5 h-3.5" /> Azure Portal
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('transformer-viz')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'transformer-viz' ? 'bg-indigo-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Network className="w-3.5 h-3.5" /> Transformer Attention
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('backprop-sandbox')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'backprop-sandbox' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" /> Backprop Sandbox
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('nn-explorer')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'nn-explorer' ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'text-violet-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Brain className="w-3.5 h-3.5" /> NN Explorer
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('rag-pipeline')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'rag-pipeline' ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" /> Visual RAG
+          </button>
+
+          <button 
+              onClick={() => setActiveTab('foundry-quickstart')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'foundry-quickstart' ? 'bg-[#0078d4] text-white shadow-lg shadow-[#0078d4]/30' : 'text-[#0078d4]/70 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5" /> Foundry Quickstart
+          </button>
+          
+          <button 
+              onClick={() => setActiveTab('lofi-study')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'lofi-study' ? 'bg-[#602dcf] text-white shadow-lg shadow-[#602dcf]/30' : 'text-purple-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Headphones className="w-3.5 h-3.5" /> Lofi Study
+          </button>
+
+          <button
+              onClick={() => setActiveTab('exam-calendar')}
+              className={`px-3 py-1.5 ml-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'exam-calendar' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'text-rose-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5" /> Exam Calendar
           </button>
           
           <button 
@@ -179,13 +332,27 @@ export default function App() {
         {activeTab === 'domain5' && <Domain5 />}
         {activeTab === 'domain6' && <Domain6 />}
         {activeTab === 'domain7' && <Domain7 />}
+        {activeTab === 'streamlit' && <TabStreamlit />}
+        {activeTab === 'pgvector' && <TabPgvector />}
+        {activeTab === 'tensor' && <TabTensor />}
+        {activeTab === 'optimizer' && <TabOptimizer />}
+        {activeTab === 'mcts' && <TabMCTS />}
         {activeTab === 'study-plan' && <StudyPlanTab />}
         {activeTab === 'cheat-sheet' && <TabCheatSheet />}
         {activeTab === 'exam' && <TabExam />}
         {activeTab === 'secret' && <TabSecret />}
+        {activeTab === 'tutorial' && <TabTutorial setActiveTab={setActiveTab} />}
+        {activeTab === 'azure-simulator' && <TabAzureSimulator />}
+        {activeTab === 'transformer-viz' && <TabTransformerViz />}
+        {activeTab === 'backprop-sandbox' && <TabBackpropSandbox />}
+        {activeTab === 'nn-explorer' && <TabNeuralExplorer />}
+        {activeTab === 'rag-pipeline' && <TabRagPipeline />}
+        {activeTab === 'foundry-quickstart' && <TabFoundryQuickstart />}
+        {activeTab === 'lofi-study' && <TabLofiStudy />}
+        {activeTab === 'exam-calendar' && <TabExamCalendar />}
       </main>
 
-      <AiChatbot isExamActive={activeTab === 'exam'} />
+      <AiChatbot isExamActive={activeTab === 'exam'} activeTab={activeTab} />
     </div>
   );
 }

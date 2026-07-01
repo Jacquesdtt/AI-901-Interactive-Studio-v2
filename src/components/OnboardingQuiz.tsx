@@ -13,7 +13,7 @@ const quizQuestions: QuizQuestion[] = [
   {
     domain: 'foundations',
     question: 'What is the primary Python class used to interact with agents in the Microsoft Foundry SDK?',
-    correctAnswerText: 'FoundryClient'
+    correctAnswerText: 'AIProjectClient'
   },
   {
     domain: 'machineLearning',

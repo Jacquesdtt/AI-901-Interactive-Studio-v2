@@ -5,9 +5,9 @@ import { Code, Play, Lightbulb, Loader2, CheckCircle, XCircle } from 'lucide-rea
 const scenarios = [
   {
     id: 's1',
-    title: 'Initialize FoundryClient',
-    description: 'Write Python code to import and initialize the FoundryClient using an endpoint and key.',
-    starterCode: 'from __future__ import annotations\n# TODO: Import FoundryClient\n\n# TODO: Initialize client\nclient = ',
+    title: 'Initialize AIProjectClient',
+    description: 'Write Python code to import and initialize the AIProjectClient using an endpoint and credential.',
+    starterCode: 'from __future__ import annotations\n# TODO: Import AIProjectClient\n\n# TODO: Initialize client\nclient = ',
   },
   {
     id: 's2',

@@ -1,7 +1,36 @@
 import React, { useState } from 'react';
 import { useMastery } from '../context/MasteryContext';
 import { activeRecallCards } from '../data/curriculum';
-import { BrainCircuit, RotateCcw, Check, CheckCircle2, Frown } from 'lucide-react';
+import { BrainCircuit, RotateCcw, Check, CheckCircle2, Frown, Eye } from 'lucide-react';
+
+function getVisualTabBridge(card: { topic: string; question: string }) {
+  const text = `${card.topic} ${card.question}`.toLowerCase();
+  if (text.includes('stride') || text.includes('tensor')) {
+    return { name: 'Tensor Sandbox', tab: 'tensor' };
+  }
+  if (text.includes('gradient') || text.includes('backprop') || text.includes('deep learning')) {
+    return { name: 'Backprop Sandbox', tab: 'backprop-sandbox' };
+  }
+  if (text.includes('rag') || text.includes('retrieval') || text.includes('genai')) {
+    return { name: 'Visual RAG', tab: 'rag-pipeline' };
+  }
+  if (text.includes('vector') || text.includes('pgvector')) {
+    return { name: 'pgvector Visualizer', tab: 'pgvector' };
+  }
+  if (text.includes('optimizer') || text.includes('descent')) {
+    return { name: '3D Optimizer', tab: 'optimizer' };
+  }
+  if (text.includes('mcts')) {
+    return { name: 'MCTS Simulator', tab: 'mcts' };
+  }
+  if (text.includes('attention') || text.includes('transformer')) {
+    return { name: 'Transformer Attention', tab: 'transformer-viz' };
+  }
+  if (text.includes('foundry')) {
+    return { name: 'Foundry Quickstart', tab: 'foundry-quickstart' };
+  }
+  return null;
+}
 
 export default function TabFlashcards() {
   const { mastery, updateFlashcard } = useMastery();
@@ -18,7 +47,7 @@ export default function TabFlashcards() {
 
   const handleGrade = (grade: 0 | 3 | 5) => {
     const card = dueCards[currentIndex];
-    updateFlashcard(card.id, grade);
+    updateFlashcard(card.id.toString(), grade);
     setIsFlipped(false);
     // Move to next card
     if (currentIndex < dueCards.length) {
@@ -37,6 +66,8 @@ export default function TabFlashcards() {
   }
 
   const currentCard = dueCards[currentIndex];
+  const bridge = getVisualTabBridge(currentCard);
+
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-6 bg-[#000000] text-white">
@@ -59,7 +90,20 @@ export default function TabFlashcards() {
 
         <div className={`absolute inset-0 backface-hidden rotate-y-180 w-full h-full p-8 rounded-2xl border flex flex-col items-center justify-center text-center shadow-xl ${isFlipped ? 'visible bg-[#0a0f1c] border-[#0078d4]' : 'invisible'}`}>
           <p className="text-xl text-slate-300 leading-relaxed overflow-y-auto custom-scrollbar">{currentCard.answer}</p>
+          {isFlipped && bridge && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent('switch-tab', { detail: bridge.tab }));
+              }}
+              className="flex items-center gap-2 px-4 py-2 mt-4 text-xs font-bold rounded-lg bg-[#0078d4]/10 text-[#0078d4] hover:bg-[#0078d4]/20 border border-[#0078d4]/30 transition-colors cursor-pointer"
+            >
+              <Eye className="w-4 h-4" />
+              <span>Visual Tool: {bridge.name}</span>
+            </button>
+          )}
         </div>
+
       </div>
 
       {isFlipped && (

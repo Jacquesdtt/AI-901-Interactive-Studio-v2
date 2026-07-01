@@ -27,13 +27,13 @@ def run_math_orchestrator():
         
         # 2. Open a server-side stateful Thread
         print("[INFO] Initializing server-side conversation thread...")
-        thread = project_client.agents.create_thread()
+        thread = project_client.agents.threads.create()
         print(f"[SUCCESS] Thread initialized. ID: {thread.id}")
         
         # 3. Post a message representing the user's question
         question = "Calculate the standard deviation of these values: [12, 15, 22, 18, 30, 45, 11]"
         print(f"[USER PROMPT] {question}")
-        project_client.agents.create_message(
+        project_client.agents.messages.create(
             thread_id=thread.id,
             role="user",
             content=question
@@ -41,7 +41,7 @@ def run_math_orchestrator():
         
         # 4. Trigger the run to invoke the agent's computation pipeline
         print("[INFO] Dispatching agent run...")
-        run = project_client.agents.create_run(
+        run = project_client.agents.runs.create(
             thread_id=thread.id,
             assistant_id=agent.id
         )
@@ -50,7 +50,7 @@ def run_math_orchestrator():
         print("[INFO] Polling run status queue...")
         while run.status in ["queued", "queued_active", "in_progress"]:
             time.sleep(1.5)
-            run = project_client.agents.get_run(
+            run = project_client.agents.runs.get_run(
                 thread_id=thread.id,
                 run_id=run.id
             )
@@ -59,7 +59,7 @@ def run_math_orchestrator():
         if run.status == "completed":
             print("[SUCCESS] Agent execution run completed. Fetching responses...")
             # Retrieve the full message history
-            messages = project_client.agents.list_messages(thread_id=thread.id)
+            messages = project_client.agents.messages.list(thread_id=thread.id)
             
             # Print messages chronologically
             for msg in reversed(messages.data):

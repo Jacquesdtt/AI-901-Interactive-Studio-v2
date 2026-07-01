@@ -31,19 +31,23 @@ const MasteryContext = createContext<MasteryContextType | undefined>(undefined);
 
 export const MasteryProvider = ({ children }: { children: ReactNode }) => {
   const [mastery, setMastery] = useState<UserMasteryState>(() => {
-    const saved = localStorage.getItem('ai901_mastery');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('ai901_mastery');
+      if (saved) {
         return JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to parse mastery from localStorage', e);
       }
+    } catch (e) {
+      console.warn('Failed to parse or read mastery from localStorage:', e);
     }
     return defaultState;
   });
 
   useEffect(() => {
-    localStorage.setItem('ai901_mastery', JSON.stringify(mastery));
+    try {
+      localStorage.setItem('ai901_mastery', JSON.stringify(mastery));
+    } catch (e) {
+      console.warn('Failed to save mastery to localStorage:', e);
+    }
   }, [mastery]);
 
   const updateScore = (domain: keyof DomainScores, score: number) => {
@@ -56,7 +60,7 @@ export const MasteryProvider = ({ children }: { children: ReactNode }) => {
         }
       };
       
-      const scores = Object.values(newState.domainScores);
+      const scores = Object.values(newState.domainScores) as number[];
       const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
       if (avg >= 80 && !newState.unlockedSecrets) {
         newState.unlockedSecrets = true;

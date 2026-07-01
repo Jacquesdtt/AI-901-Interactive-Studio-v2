@@ -142,7 +142,7 @@ print(f"Agent successfully created. ID: {agent.id}")`,
 from agent_client import project_client
 
 # 5. Initialize a persistent stateful thread on the server side
-thread = project_client.agents.create_thread()
+thread = project_client.agents.threads.create()
 
 print(f"Stateful Session Started! Thread ID: {thread.id}")`,
     highlightLines: [4, 5]
@@ -172,7 +172,7 @@ print(f"Stateful Session Started! Thread ID: {thread.id}")`,
       "[SUCCESS] Message successfully added. Role: 'user', ID: msg_usr901f"
     ],
     codeSnippet: `# 6. Append the user prompt to the persistent cloud thread
-message = project_client.agents.create_message(
+message = project_client.agents.messages.create(
     thread_id=thread.id,
     role="user",
     content="Verify the prime factors of 901 and write code to prove it."
@@ -205,7 +205,7 @@ print(f"Message attached to thread. Message ID: {message.id}")`,
       "[SUCCESS] Run created in status 'queued'. Run ID: run_r8a71b"
     ],
     codeSnippet: `# 7. Trigger the run scheduler for this thread and agent
-run = project_client.agents.create_run(
+run = project_client.agents.runs.create(
     thread_id=thread.id,
     assistant_id=agent.id
 )
@@ -257,7 +257,7 @@ print(f"Run triggered successfully. Run ID: {run.id}")`,
 # 8. Poll the run until it completes or requests custom tool execution
 while True:
     time.sleep(1.0)
-    run = project_client.agents.get_run(thread_id=thread.id, run_id=run.id)
+    run = project_client.agents.runs.get_run(thread_id=thread.id, run_id=run.id)
     print(f"Run state: {run.status}")
     
     if run.status == "requires_action":
@@ -388,11 +388,126 @@ print("Tool outputs submitted. Agent is finalising answer.")`,
       "[SUCCESS] AI Agent Execution Sequence Completed! Ready for next request."
     ],
     codeSnippet: `# 10. Fetch the final list of messages from the server
-messages = project_client.agents.list_messages(thread_id=thread.id)
+messages = project_client.agents.messages.list(thread_id=thread.id)
 
 # The messages are returned in reverse chronological order
 latest_response = messages.data[0]
 print(f"Agent Answer:\n{latest_response.content[0].text.value}")`,
     highlightLines: [2, 5, 6]
+  },
+  {
+    id: 11,
+    title: "11. FastAPI Server Startup",
+    file: "app.py",
+    description: "Initialize the FastAPI server locally. Notice how `model = joblib.load()` executes exactly once during startup, before the server begins listening for requests.",
+    analogy: "A restaurant kitchen prepping all ingredients in the morning, rather than chopping carrots individually for every single order.",
+    examTip: "Loading a model takes I/O and CPU time. In production, load the model at module scope, not inside the route handler, to ensure fast inference.",
+    payload: {
+      url: "local://uvicorn app:app --host 0.0.0.0 --port 8000",
+      method: "EXECUTE",
+      headers: { "Environment": "FastAPI" },
+      body: "Starting Uvicorn server..."
+    },
+    logs: [
+      "[INFO] Loading model.joblib from disk... (Time: 1.2s)",
+      "[SUCCESS] Model loaded successfully into memory.",
+      "[INFO] Started server process [7123]",
+      "[INFO] Waiting for application startup.",
+      "[INFO] Application startup complete.",
+      "[INFO] Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)"
+    ],
+    codeSnippet: `import joblib
+from fastapi import FastAPI
+
+# Loaded exactly once at module startup!
+print("Loading model.joblib from disk...")
+model = joblib.load("model.joblib")
+
+app = FastAPI()
+
+@app.post("/predictions")
+def predict(data: dict):
+    # Instant prediction using in-memory model
+    return {"prediction": model.predict([data["text"]])[0]}`,
+    highlightLines: [5, 6, 12]
+  },
+  {
+    id: 12,
+    title: "12. Docker Build: Layer Caching",
+    file: "Dockerfile",
+    description: "Building the Docker image. Docker executes instructions step-by-step, caching each layer. Notice how copying requirements.txt BEFORE the rest of the app prevents reinstalling pip packages when only app.py changes.",
+    analogy: "Baking a cake in stages: you can bake the sponge ahead of time (cache) and just add different icing later.",
+    examTip: "To optimize build times, copy only dependency files (requirements.txt) and run `pip install` BEFORE copying source code. Source code changes frequently, but dependencies change rarely.",
+    payload: {
+      url: "local://docker build -t text-classifier:latest .",
+      method: "EXECUTE",
+      headers: { "Environment": "Docker Engine" },
+      body: "Building image layers..."
+    },
+    logs: [
+      "Step 1/5 : FROM python:3.11-slim",
+      " ---> 4e4b51... (Cached)",
+      "Step 2/5 : COPY requirements.txt .",
+      " ---> Using cache",
+      "Step 3/5 : RUN pip install -r requirements.txt",
+      " ---> Using cache (Prevents downloading all packages again)",
+      "Step 4/5 : COPY app.py model.joblib ./",
+      " ---> f83c19... (New layer)",
+      "Successfully built text-classifier:latest"
+    ],
+    codeSnippet: `FROM python:3.11-slim
+WORKDIR /app
+
+# Step 1: Copy ONLY dependencies to leverage Docker cache
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Step 2: Copy source code (changes often)
+COPY app.py model.joblib ./
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0"]`,
+    highlightLines: [4, 5, 6]
+  },
+  {
+    id: 13,
+    title: "13. PyTorch Training Step",
+    file: "train.py",
+    description: "Executing one step of gradient descent in PyTorch. The optimizer zeroes out old gradients, the model makes a prediction (forward pass), loss is computed, and backpropagation calculates new gradients to update weights.",
+    analogy: "A golfer taking a swing (forward), seeing how far they missed the hole (loss), figuring out how to adjust their stance (backward), and physically moving their feet (step).",
+    examTip: "Failing to call `optimizer.zero_grad()` will cause gradients to accumulate across batches, completely ruining the training process.",
+    payload: {
+      url: "local://python train.py",
+      method: "EXECUTE",
+      headers: { "Environment": "PyTorch 2.0" },
+      body: "Running Epoch 1, Batch 1..."
+    },
+    logs: [
+      "[INFO] Batch 1/1000",
+      "[INFO] optimizer.zero_grad() -> Cleared old gradients.",
+      "[INFO] Forward Pass -> outputs = model(inputs)",
+      "[INFO] Loss computed: 2.3015",
+      "[INFO] loss.backward() -> Gradients computed via autograd.",
+      "[INFO] optimizer.step() -> Weights updated.",
+      "[SUCCESS] Batch 1 complete. Loss dropped to 2.1004"
+    ],
+    codeSnippet: `import torch
+
+# Standard PyTorch Training Loop Step
+for inputs, labels in dataloader:
+    # 1. Clear old gradients
+    optimizer.zero_grad()
+    
+    # 2. Forward pass (predictions)
+    outputs = model(inputs)
+    
+    # 3. Compute error (loss)
+    loss = criterion(outputs, labels)
+    
+    # 4. Backpropagation (compute gradients)
+    loss.backward()
+    
+    # 5. Update weights
+    optimizer.step()`,
+    highlightLines: [6, 9, 12, 15, 18]
   }
 ];
